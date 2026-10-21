@@ -60,23 +60,28 @@ Open-shell states use UKS, so singly occupied orbitals of the majority spin do n
 
 ## 4. Data set
 
-| $d^n$ | examples | states (2S+1) | count |
-|---|---|---|---|
-| d4 | Cr(II), Mn(III) | 3, 5 (1 only in low symmetry) | 30 |
-| d5 | Mn(II), Fe(III) | 2, 4, 6 | 35 |
-| d6 | Fe(II), Co(III) | 1, 3, 5 | 50 |
-| d7 | Co(II), Ni(III) | 2, 4 | 30 |
-| d8 | Ni(II), Co(I) | 1 (square planar), 3 | 35 |
-| 4d d5/d6 | Ru(III), Ru(II), Rh(III) | 2/4, 1/3/5 | 30 |
-| non-innocent | {FeNO}⁷, Fe/Co porphine, Ni/Co dithiolene, catecholate/semiquinone, bis(imino)pyridine-Fe | all accessible | 40 |
+Candidate set as built (`structures/complexes.csv`): 255 complexes, 649 states.
 
-- **Geometry mix:** ~50 % CN6, 25 % CN4 (Td/square planar), 20 % CN5 (TBP/SqPy), 5 % other.
-- **Ligand classes** (used for leave-ligand-class-out CV): halide, O-donor, N-sp3, N-sp2, N-sp, C-donor (CN⁻, CO), P-donor, S-donor, non-innocent.
-- **Size:** at most ~50 atoms, because of the QZ DLPNO cost. Recalibrate after the pilot.
+| $d^n$ | metals (complexes) | states (2S+1) | complexes | states |
+|---|---|---|---|---|
+| d4 | Cr(II) 20, Mn(III) 18 | 3, 5 | 38 | 76 |
+| d5 | Mn(II) 29, Fe(III) 26 | 2, 4, 6 | 55 | 165 |
+| d6 | Fe(II) 39, Co(III) 22 | 1, 3, 5 | 61 | 180 |
+| d7 | Co(II) 34, Ni(III) 9 | 2, 4 | 43 | 86 |
+| d8 | Ni(II) 27, Co(I) 4 | 1, 3 | 31 | 62 |
+| 4d d5 | Ru(III) 9 | 2, 4, 6 | 9 | 26 |
+| 4d d6 | Ru(II) 11, Rh(III) 7 | 1, 3, 5 | 18 | 54 |
+
+- **Non-innocent ligands (25, flag `noninnocent`):** porphine (Fe, Mn, Co, Ni; with axial Cl/imidazole/CO/NH3/NO), {FeNO}⁷, {CoNO}⁸, {RuNO}, bis(imino)pyridine (Mn, Fe, Co), catecholate (Mn, Fe, Co), Ni bis(dithiolene) (0/−1), Co(bpy)(cat)(sq).
+  - NO complexes deviate from the grid's state rule: Fe(II)+NO uses 2S+1 = 2, 4; Co/Ru+NO use 1, 3.
+- **Geometry mix:** 171 CN6, 39 CN5 (square pyramidal/TBP), 45 CN4 (square planar/tetrahedral).
+- **Ligand classes** (used for leave-ligand-class-out CV, number of complexes): halide 129, N-sp3 103, N-sp2 57, O-donor 45, P-donor 34, non-innocent 25, N-sp 20, C-donor (CN⁻, CO) 17, S-donor (H2S, MeS⁻) 12.
+- **Size:** at most 52 atoms, because of the QZ DLPNO cost. Recalibrate after the pilot.
 - **Sources:** combinatorial structures (molSimplify, see "Candidate structures" below). Real complexes are added by hand.
   - tmQM does not fit here: it contains only closed-shell complexes with an even electron count, so no d5/d7, and it has no oxidation states.
 - **Start geometries per state:** if `xyz/<id>_m<mult>.xyz` exists, the opt stage uses it. Example: square-planar singlet vs. tetrahedral triplet for NiCl2(PH3)2.
-- **Flags** (`flags` column, `;`-separated): `jt` (Jahn–Teller active), `mr` (expected multireference, e.g. open-shell singlet), `neg_control`. Flagged states are kept and get priority for NEVPT2.
+- **Flags** (`flags` column, `;`-separated): `noninnocent`, `jt` (homoleptic octahedral d4/d7, e_g¹ in one state), `mr` (expected multireference: octahedral Ni(II) singlet, dithiolene, catecholate/semiquinone). Flagged states are kept and get priority for NEVPT2.
+- **Negative controls** (N_FOD ≈ 0 in all states) are identified after the FOD runs, not in advance.
 - **External validation (never trained on):** SSE17 (Radoń et al. 2024).
   - Its references are electronic spin-state energetics back-corrected from experiment.
   - Vertical entries need $E$(state j at the geometry of state i).

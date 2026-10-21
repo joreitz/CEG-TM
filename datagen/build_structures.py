@@ -33,7 +33,8 @@ METALS = {
 }
 
 # SMILES ligands: name: (SMILES, 1-based connecting atoms, formal charge)
-SMILES = {"pdi": ("CC(=N)c1cccc(n1)C(C)=N", [3, 9, 12], 0), "dtl": ("[S-]C=C[S-]", [1, 4], -2)}
+SMILES = {"pdi": ("CC(=N)c1cccc(n1)C(C)=N", [3, 9, 12], 0), "dtl": ("[S-]C=C[S-]", [1, 4], -2),
+          "sme": ("C[S-]", [2], -1)}
 CHARGE = {"water": 0, "ammonia": 0, "acetonitrile": 0, "en": 0, "pyridine": 0, "imidazole": 0, "bipy": 0,
           "terpy": 0, "ph3": 0, "pme3": 0, "dmpe": 0, "h2s": 0, "carbonyl": 0, "nitroso": 0, "chloride": -1,
           "fluoride": -1, "bromide": -1, "ncs": -1, "cyanide": -1, "acac": -1, "ox": -2, "cat": -2,
@@ -61,6 +62,7 @@ SETS = {
     "nh3_4cn2": ("oct", ["ammonia", "cyanide"], [4, 2], "N-sp3;C-donor"),
     "nh3_5co": ("oct", ["ammonia", "carbonyl"], [5, 1], "N-sp3;C-donor"),
     "nh3_4h2s2": ("oct", ["ammonia", "h2s"], [4, 2], "N-sp3;S-donor"),
+    "nh3_4sme2": ("oct", ["ammonia", "sme"], [4, 2], "N-sp3;S-donor"),
     "ph3_4cl2": ("oct", ["ph3", "chloride"], [4, 2], "P-donor;halide"),
     "dmpe2cl2": ("oct", ["dmpe", "dmpe", "chloride", "chloride"], [1, 1, 1, 1], "P-donor;halide"),
     "nh3_4cat": ("oct", ["cat", "ammonia"], [1, 4], "N-sp3;non-innocent"),
@@ -70,9 +72,9 @@ SETS = {
     "cl2py2": ("sqp;thd", ["chloride", "pyridine", "chloride", "pyridine"], [1, 1, 1, 1], "halide;N-sp2"),
     "ncs2py2": ("sqp;thd", ["ncs", "pyridine", "ncs", "pyridine"], [1, 1, 1, 1], "N-sp;N-sp2"),
     "nh3_4": ("sqp;thd", ["ammonia"], [4], "N-sp3"),
-    "en2": ("sqp;thd", ["en"], [2], "N-sp3"),
-    "acac2": ("sqp", ["acac"], [2], "O-donor"),  # tetrahedral bis-chelate start gives M-C contacts
-    "bpycl2": ("sqp;thd", ["bipy", "chloride"], [1, 2], "N-sp2;halide"),
+    "en2": ("sqp", ["en"], [2], "N-sp3"),  # molSimplify misplaces chelates in tetrahedral starts
+    "acac2": ("sqp", ["acac"], [2], "O-donor"),
+    "bpycl2": ("sqp", ["bipy", "chloride"], [1, 2], "N-sp2;halide"),
     "nh3_2cn2": ("sqp;thd", ["ammonia", "cyanide", "ammonia", "cyanide"], [1, 1, 1, 1], "N-sp3;C-donor"),
     "co2ph3_2": ("sqp;thd", ["carbonyl", "ph3", "carbonyl", "ph3"], [1, 1, 1, 1], "C-donor;P-donor"),
     "co2pme3_2": ("sqp;thd", ["carbonyl", "pme3", "carbonyl", "pme3"], [1, 1, 1, 1], "C-donor;P-donor"),
@@ -104,18 +106,21 @@ GRID = {
     "cr2": OCT_A + ["nh3_4", "acac2", "cl2py2", "en2", "bpycl2", "nh3_4cl", "terpycl2", "pme3_3cl2"],
     "mn3": [s for s in OCT_A if s != "mecn6"] + ["h2o4f2", "nh3_4ox", "nh3_4cat", "h2o4cl", "nh3_4cl", "terpycl2",
                                                  "porcl"],
-    "mn2": OCT_B + ["ph3_4cl2", "cl2ph3_2", "cl2pme3_2", "br2ph3_2", "cl2py2", "ncs2py2", "acac2", "terpycl2",
+    "mn2": OCT_B + ["nh3_4h2s2", "nh3_4sme2", "ph3_4cl2", "cl2ph3_2", "cl2pme3_2", "br2ph3_2", "cl2py2", "ncs2py2", "acac2", "terpycl2",
                     "pme3_3cl2", "nh3_4cl", "nh3_3cl2", "pdicl2"],
     "fe3": [s for s in OCT_B if s != "mecn6"] + ["h2o4f2", "nh3_4ox", "nh3_4cat", "cl4", "terpycl2", "nh3_4cl",
-                                                 "h2o4cl", "nh3_3cl2", "porcl", "pornh3_2"],
-    "fe2": OCT_B + ["h2o4f2", "nh3_4ox", "nh3_5co", "nh3_4h2s2", "ph3_4cl2", "cl2ph3_2", "cl2pme3_2", "br2ph3_2",
+                                                 "h2o4cl", "nh3_3cl2", "nh3_4h2s2", "nh3_4sme2", "porcl",
+                                                 "pornh3_2"],
+    "fe2": OCT_B + ["h2o4f2", "nh3_4ox", "nh3_5co", "nh3_4h2s2", "nh3_4sme2", "ph3_4cl2", "cl2ph3_2", "cl2pme3_2", "br2ph3_2",
                     "cl2py2", "ncs2py2", "acac2", "terpycl2", "nh3_4cl", "nh3_3cl2", "pme3_3cl2", "pdicl2", "por",
                     "porimd", "porco", "pornh3_2"],
-    "co3": [s for s in OCT_B if s != "py4ncs2"] + ["h2o4f2", "nh3_4ox", "nh3_4cat", "porcl", "pornh3_2"],
-    "co2": OCT_B + ["cl2ph3_2", "cl2pme3_2", "br2ph3_2", "cl2py2", "ncs2py2", "nh3_4", "en2", "acac2", "bpycl2",
+    "co3": [s for s in OCT_B if s != "py4ncs2"] + ["h2o4f2", "nh3_4ox", "nh3_4cat", "nh3_4h2s2", "nh3_4sme2",
+                                                   "porcl", "pornh3_2"],
+    "co2": OCT_B + ["nh3_4h2s2", "nh3_4sme2", "cl2ph3_2", "cl2pme3_2", "br2ph3_2", "cl2py2", "ncs2py2", "nh3_4", "en2", "acac2", "bpycl2",
                     "nh3_2cn2", "terpycl2", "pme3_3cl2", "nh3_4cl", "nh3_3cl2", "pdicl2", "por"],
     "ni3": ["nh3_6", "en3", "h2o4cl2", "nh3_4cl2", "en2cl2", "bpy2cl2", "dmpe2cl2", "terpycl2", "pme3_3cl2"],
-    "ni2": ["h2o6", "nh3_6", "en3", "h2o4cl2", "nh3_4cl2", "en2cl2", "py4cl2", "bpy2cl2", "cl2ph3_2", "cl2pme3_2",
+    "ni2": ["h2o6", "nh3_6", "en3", "h2o4cl2", "nh3_4cl2", "nh3_4h2s2", "nh3_4sme2", "en2cl2", "py4cl2", "bpy2cl2",
+            "cl2ph3_2", "cl2pme3_2",
             "br2ph3_2", "cl2py2", "ncs2py2", "nh3_4", "en2", "acac2", "bpycl2", "nh3_2cn2", "terpycl2",
             "pme3_3cl2", "nh3_4cl", "nh3_3cl2", "por"],
     "co1": ["co2ph3_2", "co2pme3_2", "co3pme3_2", "co3ph3_2"],
