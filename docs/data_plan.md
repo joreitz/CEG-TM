@@ -73,7 +73,8 @@ Open-shell states use UKS, so singly occupied orbitals of the majority spin do n
 - **Geometry mix:** ~50 % CN6, 25 % CN4 (Td/square planar), 20 % CN5 (TBP/SqPy), 5 % other.
 - **Ligand classes** (used for leave-ligand-class-out CV): halide, O-donor, N-sp3, N-sp2, N-sp, C-donor (CN⁻, CO), P-donor, S-donor, non-innocent.
 - **Size:** at most ~50 atoms, because of the QZ DLPNO cost. Recalibrate after the pilot.
-- **Sources:** combinatorial structures (molSimplify) plus real complexes (CSD/tmQM).
+- **Sources:** combinatorial structures (molSimplify, see "Candidate structures" below). Real complexes are added by hand.
+  - tmQM does not fit here: it contains only closed-shell complexes with an even electron count, so no d5/d7, and it has no oxidation states.
 - **Start geometries per state:** if `xyz/<id>_m<mult>.xyz` exists, the opt stage uses it. Example: square-planar singlet vs. tetrahedral triplet for NiCl2(PH3)2.
 - **Flags** (`flags` column, `;`-separated): `jt` (Jahn–Teller active), `mr` (expected multireference, e.g. open-shell singlet), `neg_control`. Flagged states are kept and get priority for NEVPT2.
 - **External validation (never trained on):** SSE17 (Radoń et al. 2024).
@@ -147,12 +148,16 @@ Atom-resolved descriptors ($N_\mathrm{FOD}^M$, $N_\mathrm{FOD}^L$, CN) will be p
 
 ## 8. Workflow
 
+The start structures are already in `structures/` (section 8a), so ORCA work starts directly:
+
 ```bash
-python datagen/make_inputs.py complexes.csv runs --stage opt   # then run the jobs
-python datagen/make_inputs.py complexes.csv runs --stage sp    # needs converged opt
-python datagen/make_inputs.py complexes.csv runs --stage cc    # needs opt + tpssh
-python datagen/collect.py complexes.csv runs --out data [--nevpt2 nevpt2.csv]
+python datagen/make_inputs.py structures/pilot.csv runs --stage opt   # then run the jobs
+python datagen/make_inputs.py structures/pilot.csv runs --stage sp    # needs converged opt
+python datagen/make_inputs.py structures/pilot.csv runs --stage cc    # needs opt + tpssh
+python datagen/collect.py structures/pilot.csv runs --out data [--nevpt2 nevpt2.csv]
 ```
+
+Use `structures/complexes.csv` instead of `structures/pilot.csv` for the full set.
 
 - Every stage writes `runs/jobs_<stage>.txt` listing the new job directories.
 - Run each job inside its directory as `orca <job>.inp > <job>.out`, using the full ORCA path for parallel runs.
@@ -170,16 +175,46 @@ python datagen/collect.py complexes.csv runs --out data [--nevpt2 nevpt2.csv]
 | `fod:spin` | smearing changed $N_\alpha - N_\beta$, i.e. the multiplicity is not conserved |
 | `t1:missing` | informative only; does not affect `ok` |
 
-## 9. Pilot (5 complexes, `datagen/complexes.example.csv`)
+## 8a. Candidate structures
+
+`structures/complexes.csv` with `structures/xyz/` is the candidate list. It is produced in two steps:
+
+```bash
+python datagen/build_structures.py structures --molsimplify <molsimplify>   # molSimplify 2.0, legacy CLI
+python datagen/preopt_xtb.py structures/complexes.csv --xtb <xtb>           # GFN2-xTB 6.7.1
+```
+
+**`build_structures.py`** builds a grid of metal/oxidation state × ligand set (`METALS`, `SETS`, `GRID`), plus explicit non-innocent cases (`EXTRA`). The rules are:
+- Charge window: −1 ≤ q ≤ 3.
+- At most 52 atoms.
+- The metal must have exactly the target coordination number (bond criterion as below), otherwise the structure is rejected.
+- molSimplify's own charge must equal the manifest charge.
+- Isomers:
+  - A repeated ligand name fixes the placement order: cis-M(bpy)2X2, trans-MX2(dmpe)2, trans square-planar MX2L2.
+  - Other octahedral MX2L4 come out trans by default.
+- CN4 complexes with geometry `sqp;thd`:
+  - d4: square planar for all states.
+  - Otherwise: square planar for the lowest multiplicity (`<id>_m<mult>.xyz`) and tetrahedral for all other states.
+- Ligands with radical or NO character (`EXTRA`):
+  - NO is counted as neutral. The formal oxidation state and dⁿ are those of the metal without NO.
+  - Ni dithiolene and Co catecholate/semiquinone carry explicit charges.
+  - All of them are flagged `noninnocent`. Dithiolene and catecholate are also flagged `mr`.
+- The complexes are hypothetical model complexes chosen to span the ligand field. Real complexes (e.g. literature spin-crossover systems) should be added by hand with the same manifest columns.
+
+**`preopt_xtb.py`** optimises each file with GFN2-xTB for the state it serves:
+- `<id>_m<mult>.xyz` for that multiplicity.
+- `<id>.xyz` for the highest remaining multiplicity.
+
+A result is accepted only if the bond graph is unchanged. The criterion is d < 1.3 (r_A + r_B), or 1.4 (r_A + r_B) for metal bonds, with Pyykkö covalent radii. Otherwise the molSimplify structure is kept. `structures/preopt_log.csv` lists the status of every file. GFN2-xTB only provides start geometries; the r2SCAN-3c optimisation decides the final structure of each state.
+
+## 9. Pilot (5 complexes, `structures/pilot.csv`)
 
 The pilot complexes are:
-- [Fe(H2O)6]²⁺
-- [Fe(NCH)6]²⁺
-- [Mn(H2O)6]²⁺ (negative control)
-- NiCl2(PH3)2 (square planar vs. tetrahedral)
-- Fe(II) porphine (intermediate spin, MR test)
-
-The xyz files go to `datagen/xyz/`.
+- `fe2_h2o6`: [Fe(H2O)6]²⁺
+- `fe2_mecn6`: [Fe(NCMe)6]²⁺, the nitrile model; HCN is not in the molSimplify library
+- `mn2_h2o6`: [Mn(H2O)6]²⁺ (negative control)
+- `ni2_cl2ph3_2`: NiCl2(PH3)2 (square planar vs. tetrahedral)
+- `fe2_por`: Fe(II) porphine (intermediate spin, MR test)
 
 Check before the full run:
 1. ORCA accepts TPSS0, r2SCAN0, D4 for TPSS/TPSS0, and DLPNO-CCSD(T1). Fallback for missing D4 parameters: D3BJ for all three $a_x$-scan functionals.

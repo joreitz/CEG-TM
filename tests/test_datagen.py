@@ -6,8 +6,10 @@ from pathlib import Path
 import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "datagen"))
+import build_structures  # noqa: E402
 import collect  # noqa: E402
 import make_inputs  # noqa: E402
+import preopt_xtb  # noqa: E402
 
 UKS_ORBITALS = """
 ----------------
@@ -119,3 +121,41 @@ def test_make_inputs_stages(tmp_path):
     fod = (run / "fe/m5/fod/fod.inp").read_text()
     assert "! UKS TPSS def2-TZVP" in fod and "SmearTemp 5000" in fod
     assert not (run / "fe/m1/fod").exists()
+
+
+def test_candidates_consistent():
+    rows = [r for _, _, r in build_structures.candidates()]
+    assert len({r["id"] for r in rows}) == len(rows)
+    assert all(build_structures.QMIN <= r["charge"] <= build_structures.QMAX for r in rows)
+    for r in rows:  # electron-count parity: d^n plus ligand radicals/NO must match every multiplicity
+        assert len({int(m) % 2 for m in r["mults"].split()}) == 1, r["id"]
+    for mtag, stag, r in build_structures.candidates():
+        if r["id"] not in build_structures.EXTRA:  # grid: d^n parity fixes the multiplicity parity
+            assert all((int(m) - 1) % 2 == r["dn"] % 2 for m in r["mults"].split()), r["id"]
+    assert set(build_structures.PILOT) <= {r["id"] for r in rows}
+
+
+def test_graph_and_tasks(tmp_path):
+    el = ["Fe", "Cl", "O", "H"]
+    xyz = [(0, 0, 0), (2.3, 0, 0), (0, 2.2, 0), (0, 3.15, 0)]
+    assert preopt_xtb.graph(el, xyz) == {(1, 0), (2, 0), (3, 2)}
+    xyz[1] = (3.5, 0, 0)  # Fe-Cl dissociated
+    assert (1, 0) not in preopt_xtb.graph(el, xyz)
+    (tmp_path / "a.xyz").touch()
+    (tmp_path / "a_m1.xyz").touch()
+    row = {"xyz": tmp_path / "a.xyz", "mults": [1, 3, 5]}
+    assert preopt_xtb.tasks(row) == [(tmp_path / "a_m1.xyz", 1), (tmp_path / "a.xyz", 5)]
+
+
+Z = {"H": 1, "C": 6, "N": 7, "O": 8, "F": 9, "P": 15, "S": 16, "Cl": 17, "Br": 35, "Cr": 24, "Mn": 25, "Fe": 26,
+     "Co": 27, "Ni": 28, "Ru": 44, "Rh": 45}
+
+
+@pytest.mark.skipif(not (ROOT := Path(__file__).resolve().parents[1] / "structures/complexes.csv").is_file(),
+                    reason="structures not built")
+def test_structures_electron_parity():
+    for row in make_inputs.read_manifest(ROOT):
+        for xyz in [row["xyz"], *row["xyz"].parent.glob(f"{row['xyz'].stem}_m*.xyz")]:
+            el = preopt_xtb.read_xyz(xyz)[0]
+            nel = sum(Z[e] for e in el) - row["charge"]
+            assert all((nel - m + 1) % 2 == 0 for m in row["mults"]), xyz.name
