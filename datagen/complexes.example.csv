@@ -1,0 +1,6 @@
+id,metal,ox,charge,dn,row,mults,geometry,ligand_class,flags,xyz
+fe_h2o6,Fe,2,2,6,3d,1 5,oct,O-donor,,xyz/fe_h2o6.xyz
+fe_nch6,Fe,2,2,6,3d,1 5,oct,N-sp,,xyz/fe_nch6.xyz
+mn_h2o6,Mn,2,2,5,3d,2 6,oct,O-donor,neg_control,xyz/mn_h2o6.xyz
+nicl2_ph3_2,Ni,2,0,8,3d,1 3,sqp;td,halide;P-donor,,xyz/nicl2_ph3_2.xyz
+fe_porphine,Fe,2,0,6,3d,1 3 5,sqp,non-innocent,mr,xyz/fe_porphine.xyz
