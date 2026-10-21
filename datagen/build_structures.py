@@ -15,7 +15,7 @@ import tempfile
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
-from preopt_xtb import METALS as METAL_SYMBOLS, graph, read_xyz
+from geom import METALS as METAL_SYMBOLS, graph, read_xyz
 
 MAX_ATOMS = 52
 QMIN, QMAX = -1, 3  # gas-phase charge window (multiply charged anions are often unbound)
@@ -106,18 +106,19 @@ GRID = {
     "cr2": OCT_A + ["nh3_4", "acac2", "cl2py2", "en2", "bpycl2", "nh3_4cl", "terpycl2", "pme3_3cl2"],
     "mn3": [s for s in OCT_A if s != "mecn6"] + ["h2o4f2", "nh3_4ox", "nh3_4cat", "h2o4cl", "nh3_4cl", "terpycl2",
                                                  "porcl"],
-    "mn2": OCT_B + ["nh3_4h2s2", "nh3_4sme2", "ph3_4cl2", "cl2ph3_2", "cl2pme3_2", "br2ph3_2", "cl2py2", "ncs2py2", "acac2", "terpycl2",
-                    "pme3_3cl2", "nh3_4cl", "nh3_3cl2", "pdicl2"],
+    "mn2": OCT_B + ["nh3_4h2s2", "nh3_4sme2", "ph3_4cl2", "cl2ph3_2", "cl2pme3_2", "br2ph3_2", "cl2py2",
+                    "ncs2py2", "acac2", "terpycl2", "pme3_3cl2", "nh3_4cl", "nh3_3cl2", "pdicl2"],
     "fe3": [s for s in OCT_B if s != "mecn6"] + ["h2o4f2", "nh3_4ox", "nh3_4cat", "cl4", "terpycl2", "nh3_4cl",
                                                  "h2o4cl", "nh3_3cl2", "nh3_4h2s2", "nh3_4sme2", "porcl",
                                                  "pornh3_2"],
-    "fe2": OCT_B + ["h2o4f2", "nh3_4ox", "nh3_5co", "nh3_4h2s2", "nh3_4sme2", "ph3_4cl2", "cl2ph3_2", "cl2pme3_2", "br2ph3_2",
-                    "cl2py2", "ncs2py2", "acac2", "terpycl2", "nh3_4cl", "nh3_3cl2", "pme3_3cl2", "pdicl2", "por",
-                    "porimd", "porco", "pornh3_2"],
+    "fe2": OCT_B + ["h2o4f2", "nh3_4ox", "nh3_5co", "nh3_4h2s2", "nh3_4sme2", "ph3_4cl2", "cl2ph3_2",
+                    "cl2pme3_2", "br2ph3_2", "cl2py2", "ncs2py2", "acac2", "terpycl2", "nh3_4cl", "nh3_3cl2",
+                    "pme3_3cl2", "pdicl2", "por", "porimd", "porco", "pornh3_2"],
     "co3": [s for s in OCT_B if s != "py4ncs2"] + ["h2o4f2", "nh3_4ox", "nh3_4cat", "nh3_4h2s2", "nh3_4sme2",
                                                    "porcl", "pornh3_2"],
-    "co2": OCT_B + ["nh3_4h2s2", "nh3_4sme2", "cl2ph3_2", "cl2pme3_2", "br2ph3_2", "cl2py2", "ncs2py2", "nh3_4", "en2", "acac2", "bpycl2",
-                    "nh3_2cn2", "terpycl2", "pme3_3cl2", "nh3_4cl", "nh3_3cl2", "pdicl2", "por"],
+    "co2": OCT_B + ["nh3_4h2s2", "nh3_4sme2", "cl2ph3_2", "cl2pme3_2", "br2ph3_2", "cl2py2", "ncs2py2", "nh3_4",
+                    "en2", "acac2", "bpycl2", "nh3_2cn2", "terpycl2", "pme3_3cl2", "nh3_4cl", "nh3_3cl2", "pdicl2",
+                    "por"],
     "ni3": ["nh3_6", "en3", "h2o4cl2", "nh3_4cl2", "en2cl2", "bpy2cl2", "dmpe2cl2", "terpycl2", "pme3_3cl2"],
     "ni2": ["h2o6", "nh3_6", "en3", "h2o4cl2", "nh3_4cl2", "nh3_4h2s2", "nh3_4sme2", "en2cl2", "py4cl2", "bpy2cl2",
             "cl2ph3_2", "cl2pme3_2",

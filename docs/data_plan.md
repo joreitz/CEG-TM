@@ -206,11 +206,22 @@ python datagen/preopt_xtb.py structures/complexes.csv --xtb <xtb>           # GF
   - All of them are flagged `noninnocent`. Dithiolene and catecholate are also flagged `mr`.
 - The complexes are hypothetical model complexes chosen to span the ligand field. Real complexes (e.g. literature spin-crossover systems) should be added by hand with the same manifest columns.
 
-**`preopt_xtb.py`** optimises each file with GFN2-xTB for the state it serves:
+**`preopt_xtb.py`** optimises each file with GFN2-xTB for the states it serves:
 - `<id>_m<mult>.xyz` for that multiplicity.
-- `<id>.xyz` for the highest remaining multiplicity.
+- `<id>.xyz` for the remaining multiplicities, highest first.
 
-A result is accepted only if the bond graph is unchanged. The criterion is d < 1.3 (r_A + r_B), or 1.4 (r_A + r_B) for metal bonds, with Pyykkö covalent radii. Otherwise the molSimplify structure is kept. `structures/preopt_log.csv` lists the status of every file. GFN2-xTB only provides start geometries; the r2SCAN-3c optimisation decides the final structure of each state.
+A result is accepted only if the bond graph (`datagen/geom.py`) is unchanged.
+- Bond criterion: d < 1.3 (r_A + r_B), or 1.35 (r_A + r_B) for metal bonds, with Pyykkö covalent radii.
+- H–H contacts are ignored. They only occur as clashes in molSimplify starts, e.g. between the two dmpe ligands.
+
+GFN2-xTB often over-stretches high-spin M–L bonds (> 2.5 Å for H2O/NH3/en). If that happens, the next lower multiplicity served by the file is tried; the multiplicity actually used is written to the comment line and to `structures/preopt_log.csv`.
+
+Current status:
+- 279 of 281 files are pre-optimised.
+- [Fe(H2O)4F2] and [Ni(H2O)4Cl2] keep the molSimplify geometry: GFN2 detaches water in every multiplicity.
+- All files have the target coordination number, and there are no non-bonded contacts below 1.5 Å.
+
+GFN2-xTB only provides start geometries; the r2SCAN-3c optimisation decides the final structure of each state. `make_inputs.py` compares the bond graphs of the start and the optimised r2SCAN-3c geometry. If a ligand dissociated or bonding otherwise changed, no single points are written for that state.
 
 ## 9. Pilot (5 complexes, `structures/pilot.csv`)
 

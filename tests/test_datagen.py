@@ -8,6 +8,7 @@ import pytest
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "datagen"))
 import build_structures  # noqa: E402
 import collect  # noqa: E402
+import geom  # noqa: E402
 import make_inputs  # noqa: E402
 import preopt_xtb  # noqa: E402
 
@@ -122,6 +123,13 @@ def test_make_inputs_stages(tmp_path):
     assert "! UKS TPSS def2-TZVP" in fod and "SmearTemp 5000" in fod
     assert not (run / "fe/m1/fod").exists()
 
+    opt = run / "fe/m1/opt"  # converged, but the chloride left during the optimisation
+    (opt / "geom.xyz").write_text("2\n\nFe 0 0 0\nCl 2.3 0 0\n")
+    (opt / "opt.xyz").write_text("2\n\nFe 0 0 0\nCl 4.5 0 0\n")
+    (opt / "opt.out").write_text("THE OPTIMIZATION HAS CONVERGED\n****ORCA TERMINATED NORMALLY****\n")
+    make_inputs.main([str(tmp_path / "c.csv"), str(run), "--stage", "sp"])
+    assert not (run / "fe/m1/fod").exists()
+
 
 def test_candidates_consistent():
     rows = [r for _, _, r in build_structures.candidates()]
@@ -138,13 +146,14 @@ def test_candidates_consistent():
 def test_graph_and_tasks(tmp_path):
     el = ["Fe", "Cl", "O", "H"]
     xyz = [(0, 0, 0), (2.3, 0, 0), (0, 2.2, 0), (0, 3.15, 0)]
-    assert preopt_xtb.graph(el, xyz) == {(1, 0), (2, 0), (3, 2)}
+    assert geom.graph(el, xyz) == {(1, 0), (2, 0), (3, 2)}
     xyz[1] = (3.5, 0, 0)  # Fe-Cl dissociated
-    assert (1, 0) not in preopt_xtb.graph(el, xyz)
+    assert (1, 0) not in geom.graph(el, xyz)
+    assert geom.graph(["H", "H"], [(0, 0, 0), (0.75, 0, 0)]) == set()  # H-H clashes are not bonds
     (tmp_path / "a.xyz").touch()
     (tmp_path / "a_m1.xyz").touch()
     row = {"xyz": tmp_path / "a.xyz", "mults": [1, 3, 5]}
-    assert preopt_xtb.tasks(row) == [(tmp_path / "a_m1.xyz", 1), (tmp_path / "a.xyz", 5)]
+    assert preopt_xtb.tasks(row) == [(tmp_path / "a_m1.xyz", [1]), (tmp_path / "a.xyz", [5, 3])]
 
 
 Z = {"H": 1, "C": 6, "N": 7, "O": 8, "F": 9, "P": 15, "S": 16, "Cl": 17, "Br": 35, "Cr": 24, "Mn": 25, "Fe": 26,
