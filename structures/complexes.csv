@@ -1,0 +1,256 @@
+id,metal,ox,charge,dn,row,mults,geometry,ligand_class,flags,xyz
+cr2_h2o6,Cr,2,2,4,3d,3 5,oct,O-donor,jt,xyz/cr2_h2o6.xyz
+cr2_nh3_6,Cr,2,2,4,3d,3 5,oct,N-sp3,jt,xyz/cr2_nh3_6.xyz
+cr2_mecn6,Cr,2,2,4,3d,3 5,oct,N-sp,jt,xyz/cr2_mecn6.xyz
+cr2_en3,Cr,2,2,4,3d,3 5,oct,N-sp3,jt,xyz/cr2_en3.xyz
+cr2_h2o4cl2,Cr,2,0,4,3d,3 5,oct,O-donor;halide,,xyz/cr2_h2o4cl2.xyz
+cr2_nh3_4cl2,Cr,2,0,4,3d,3 5,oct,N-sp3;halide,,xyz/cr2_nh3_4cl2.xyz
+cr2_en2cl2,Cr,2,0,4,3d,3 5,oct,N-sp3;halide,,xyz/cr2_en2cl2.xyz
+cr2_py4cl2,Cr,2,0,4,3d,3 5,oct,N-sp2;halide,,xyz/cr2_py4cl2.xyz
+cr2_bpy2cl2,Cr,2,0,4,3d,3 5,oct,N-sp2;halide,,xyz/cr2_bpy2cl2.xyz
+cr2_acac3,Cr,2,-1,4,3d,3 5,oct,O-donor,jt,xyz/cr2_acac3.xyz
+cr2_nh3_4cn2,Cr,2,0,4,3d,3 5,oct,N-sp3;C-donor,,xyz/cr2_nh3_4cn2.xyz
+cr2_dmpe2cl2,Cr,2,0,4,3d,3 5,oct,P-donor;halide,,xyz/cr2_dmpe2cl2.xyz
+cr2_nh3_4,Cr,2,2,4,3d,3 5,sqp;thd,N-sp3,,xyz/cr2_nh3_4.xyz
+cr2_acac2,Cr,2,0,4,3d,3 5,sqp,O-donor,,xyz/cr2_acac2.xyz
+cr2_cl2py2,Cr,2,0,4,3d,3 5,sqp;thd,halide;N-sp2,,xyz/cr2_cl2py2.xyz
+cr2_en2,Cr,2,2,4,3d,3 5,sqp,N-sp3,,xyz/cr2_en2.xyz
+cr2_bpycl2,Cr,2,0,4,3d,3 5,sqp,N-sp2;halide,,xyz/cr2_bpycl2.xyz
+cr2_nh3_4cl,Cr,2,1,4,3d,3 5,spy,N-sp3;halide,,xyz/cr2_nh3_4cl.xyz
+cr2_terpycl2,Cr,2,0,4,3d,3 5,spy,N-sp2;halide,,xyz/cr2_terpycl2.xyz
+cr2_pme3_3cl2,Cr,2,0,4,3d,3 5,tbp,P-donor;halide,,xyz/cr2_pme3_3cl2.xyz
+mn3_h2o6,Mn,3,3,4,3d,3 5,oct,O-donor,jt,xyz/mn3_h2o6.xyz
+mn3_nh3_6,Mn,3,3,4,3d,3 5,oct,N-sp3,jt,xyz/mn3_nh3_6.xyz
+mn3_en3,Mn,3,3,4,3d,3 5,oct,N-sp3,jt,xyz/mn3_en3.xyz
+mn3_h2o4cl2,Mn,3,1,4,3d,3 5,oct,O-donor;halide,,xyz/mn3_h2o4cl2.xyz
+mn3_nh3_4cl2,Mn,3,1,4,3d,3 5,oct,N-sp3;halide,,xyz/mn3_nh3_4cl2.xyz
+mn3_en2cl2,Mn,3,1,4,3d,3 5,oct,N-sp3;halide,,xyz/mn3_en2cl2.xyz
+mn3_py4cl2,Mn,3,1,4,3d,3 5,oct,N-sp2;halide,,xyz/mn3_py4cl2.xyz
+mn3_bpy2cl2,Mn,3,1,4,3d,3 5,oct,N-sp2;halide,,xyz/mn3_bpy2cl2.xyz
+mn3_acac3,Mn,3,0,4,3d,3 5,oct,O-donor,jt,xyz/mn3_acac3.xyz
+mn3_nh3_4cn2,Mn,3,1,4,3d,3 5,oct,N-sp3;C-donor,,xyz/mn3_nh3_4cn2.xyz
+mn3_dmpe2cl2,Mn,3,1,4,3d,3 5,oct,P-donor;halide,,xyz/mn3_dmpe2cl2.xyz
+mn3_h2o4f2,Mn,3,1,4,3d,3 5,oct,O-donor;halide,,xyz/mn3_h2o4f2.xyz
+mn3_nh3_4ox,Mn,3,1,4,3d,3 5,oct,N-sp3;O-donor,,xyz/mn3_nh3_4ox.xyz
+mn3_nh3_4cat,Mn,3,1,4,3d,3 5,oct,N-sp3;non-innocent,noninnocent,xyz/mn3_nh3_4cat.xyz
+mn3_h2o4cl,Mn,3,2,4,3d,3 5,spy,O-donor;halide,,xyz/mn3_h2o4cl.xyz
+mn3_nh3_4cl,Mn,3,2,4,3d,3 5,spy,N-sp3;halide,,xyz/mn3_nh3_4cl.xyz
+mn3_terpycl2,Mn,3,1,4,3d,3 5,spy,N-sp2;halide,,xyz/mn3_terpycl2.xyz
+mn3_porcl,Mn,3,0,4,3d,3 5,spy,non-innocent;halide,noninnocent,xyz/mn3_porcl.xyz
+mn2_h2o6,Mn,2,2,5,3d,2 4 6,oct,O-donor,,xyz/mn2_h2o6.xyz
+mn2_nh3_6,Mn,2,2,5,3d,2 4 6,oct,N-sp3,,xyz/mn2_nh3_6.xyz
+mn2_mecn6,Mn,2,2,5,3d,2 4 6,oct,N-sp,,xyz/mn2_mecn6.xyz
+mn2_en3,Mn,2,2,5,3d,2 4 6,oct,N-sp3,,xyz/mn2_en3.xyz
+mn2_h2o4cl2,Mn,2,0,5,3d,2 4 6,oct,O-donor;halide,,xyz/mn2_h2o4cl2.xyz
+mn2_nh3_4cl2,Mn,2,0,5,3d,2 4 6,oct,N-sp3;halide,,xyz/mn2_nh3_4cl2.xyz
+mn2_en2cl2,Mn,2,0,5,3d,2 4 6,oct,N-sp3;halide,,xyz/mn2_en2cl2.xyz
+mn2_py4cl2,Mn,2,0,5,3d,2 4 6,oct,N-sp2;halide,,xyz/mn2_py4cl2.xyz
+mn2_bpy2cl2,Mn,2,0,5,3d,2 4 6,oct,N-sp2;halide,,xyz/mn2_bpy2cl2.xyz
+mn2_acac3,Mn,2,-1,5,3d,2 4 6,oct,O-donor,,xyz/mn2_acac3.xyz
+mn2_nh3_4cn2,Mn,2,0,5,3d,2 4 6,oct,N-sp3;C-donor,,xyz/mn2_nh3_4cn2.xyz
+mn2_dmpe2cl2,Mn,2,0,5,3d,2 4 6,oct,P-donor;halide,,xyz/mn2_dmpe2cl2.xyz
+mn2_py4ncs2,Mn,2,0,5,3d,2 4 6,oct,N-sp2;N-sp,,xyz/mn2_py4ncs2.xyz
+mn2_imd4cl2,Mn,2,0,5,3d,2 4 6,oct,N-sp2;halide,,xyz/mn2_imd4cl2.xyz
+mn2_bpy2ncs2,Mn,2,0,5,3d,2 4 6,oct,N-sp2;N-sp,,xyz/mn2_bpy2ncs2.xyz
+mn2_nh3_4h2s2,Mn,2,2,5,3d,2 4 6,oct,N-sp3;S-donor,,xyz/mn2_nh3_4h2s2.xyz
+mn2_nh3_4sme2,Mn,2,0,5,3d,2 4 6,oct,N-sp3;S-donor,,xyz/mn2_nh3_4sme2.xyz
+mn2_ph3_4cl2,Mn,2,0,5,3d,2 4 6,oct,P-donor;halide,,xyz/mn2_ph3_4cl2.xyz
+mn2_cl2ph3_2,Mn,2,0,5,3d,2 4 6,sqp;thd,halide;P-donor,,xyz/mn2_cl2ph3_2.xyz
+mn2_cl2pme3_2,Mn,2,0,5,3d,2 4 6,sqp;thd,halide;P-donor,,xyz/mn2_cl2pme3_2.xyz
+mn2_br2ph3_2,Mn,2,0,5,3d,2 4 6,sqp;thd,halide;P-donor,,xyz/mn2_br2ph3_2.xyz
+mn2_cl2py2,Mn,2,0,5,3d,2 4 6,sqp;thd,halide;N-sp2,,xyz/mn2_cl2py2.xyz
+mn2_ncs2py2,Mn,2,0,5,3d,2 4 6,sqp;thd,N-sp;N-sp2,,xyz/mn2_ncs2py2.xyz
+mn2_acac2,Mn,2,0,5,3d,2 4 6,sqp,O-donor,,xyz/mn2_acac2.xyz
+mn2_terpycl2,Mn,2,0,5,3d,2 4 6,spy,N-sp2;halide,,xyz/mn2_terpycl2.xyz
+mn2_pme3_3cl2,Mn,2,0,5,3d,2 4 6,tbp,P-donor;halide,,xyz/mn2_pme3_3cl2.xyz
+mn2_nh3_4cl,Mn,2,1,5,3d,2 4 6,spy,N-sp3;halide,,xyz/mn2_nh3_4cl.xyz
+mn2_nh3_3cl2,Mn,2,0,5,3d,2 4 6,tbp,N-sp3;halide,,xyz/mn2_nh3_3cl2.xyz
+mn2_pdicl2,Mn,2,0,5,3d,2 4 6,spy,non-innocent;halide,noninnocent,xyz/mn2_pdicl2.xyz
+fe3_h2o6,Fe,3,3,5,3d,2 4 6,oct,O-donor,,xyz/fe3_h2o6.xyz
+fe3_nh3_6,Fe,3,3,5,3d,2 4 6,oct,N-sp3,,xyz/fe3_nh3_6.xyz
+fe3_en3,Fe,3,3,5,3d,2 4 6,oct,N-sp3,,xyz/fe3_en3.xyz
+fe3_h2o4cl2,Fe,3,1,5,3d,2 4 6,oct,O-donor;halide,,xyz/fe3_h2o4cl2.xyz
+fe3_nh3_4cl2,Fe,3,1,5,3d,2 4 6,oct,N-sp3;halide,,xyz/fe3_nh3_4cl2.xyz
+fe3_en2cl2,Fe,3,1,5,3d,2 4 6,oct,N-sp3;halide,,xyz/fe3_en2cl2.xyz
+fe3_py4cl2,Fe,3,1,5,3d,2 4 6,oct,N-sp2;halide,,xyz/fe3_py4cl2.xyz
+fe3_bpy2cl2,Fe,3,1,5,3d,2 4 6,oct,N-sp2;halide,,xyz/fe3_bpy2cl2.xyz
+fe3_acac3,Fe,3,0,5,3d,2 4 6,oct,O-donor,,xyz/fe3_acac3.xyz
+fe3_nh3_4cn2,Fe,3,1,5,3d,2 4 6,oct,N-sp3;C-donor,,xyz/fe3_nh3_4cn2.xyz
+fe3_dmpe2cl2,Fe,3,1,5,3d,2 4 6,oct,P-donor;halide,,xyz/fe3_dmpe2cl2.xyz
+fe3_py4ncs2,Fe,3,1,5,3d,2 4 6,oct,N-sp2;N-sp,,xyz/fe3_py4ncs2.xyz
+fe3_imd4cl2,Fe,3,1,5,3d,2 4 6,oct,N-sp2;halide,,xyz/fe3_imd4cl2.xyz
+fe3_bpy2ncs2,Fe,3,1,5,3d,2 4 6,oct,N-sp2;N-sp,,xyz/fe3_bpy2ncs2.xyz
+fe3_h2o4f2,Fe,3,1,5,3d,2 4 6,oct,O-donor;halide,,xyz/fe3_h2o4f2.xyz
+fe3_nh3_4ox,Fe,3,1,5,3d,2 4 6,oct,N-sp3;O-donor,,xyz/fe3_nh3_4ox.xyz
+fe3_nh3_4cat,Fe,3,1,5,3d,2 4 6,oct,N-sp3;non-innocent,noninnocent,xyz/fe3_nh3_4cat.xyz
+fe3_cl4,Fe,3,-1,5,3d,2 4 6,thd,halide,,xyz/fe3_cl4.xyz
+fe3_terpycl2,Fe,3,1,5,3d,2 4 6,spy,N-sp2;halide,,xyz/fe3_terpycl2.xyz
+fe3_nh3_4cl,Fe,3,2,5,3d,2 4 6,spy,N-sp3;halide,,xyz/fe3_nh3_4cl.xyz
+fe3_h2o4cl,Fe,3,2,5,3d,2 4 6,spy,O-donor;halide,,xyz/fe3_h2o4cl.xyz
+fe3_nh3_3cl2,Fe,3,1,5,3d,2 4 6,tbp,N-sp3;halide,,xyz/fe3_nh3_3cl2.xyz
+fe3_nh3_4h2s2,Fe,3,3,5,3d,2 4 6,oct,N-sp3;S-donor,,xyz/fe3_nh3_4h2s2.xyz
+fe3_nh3_4sme2,Fe,3,1,5,3d,2 4 6,oct,N-sp3;S-donor,,xyz/fe3_nh3_4sme2.xyz
+fe3_porcl,Fe,3,0,5,3d,2 4 6,spy,non-innocent;halide,noninnocent,xyz/fe3_porcl.xyz
+fe3_pornh3_2,Fe,3,1,5,3d,2 4 6,oct,non-innocent;N-sp3,noninnocent,xyz/fe3_pornh3_2.xyz
+fe2_h2o6,Fe,2,2,6,3d,1 3 5,oct,O-donor,,xyz/fe2_h2o6.xyz
+fe2_nh3_6,Fe,2,2,6,3d,1 3 5,oct,N-sp3,,xyz/fe2_nh3_6.xyz
+fe2_mecn6,Fe,2,2,6,3d,1 3 5,oct,N-sp,,xyz/fe2_mecn6.xyz
+fe2_en3,Fe,2,2,6,3d,1 3 5,oct,N-sp3,,xyz/fe2_en3.xyz
+fe2_h2o4cl2,Fe,2,0,6,3d,1 3 5,oct,O-donor;halide,,xyz/fe2_h2o4cl2.xyz
+fe2_nh3_4cl2,Fe,2,0,6,3d,1 3 5,oct,N-sp3;halide,,xyz/fe2_nh3_4cl2.xyz
+fe2_en2cl2,Fe,2,0,6,3d,1 3 5,oct,N-sp3;halide,,xyz/fe2_en2cl2.xyz
+fe2_py4cl2,Fe,2,0,6,3d,1 3 5,oct,N-sp2;halide,,xyz/fe2_py4cl2.xyz
+fe2_bpy2cl2,Fe,2,0,6,3d,1 3 5,oct,N-sp2;halide,,xyz/fe2_bpy2cl2.xyz
+fe2_acac3,Fe,2,-1,6,3d,1 3 5,oct,O-donor,,xyz/fe2_acac3.xyz
+fe2_nh3_4cn2,Fe,2,0,6,3d,1 3 5,oct,N-sp3;C-donor,,xyz/fe2_nh3_4cn2.xyz
+fe2_dmpe2cl2,Fe,2,0,6,3d,1 3 5,oct,P-donor;halide,,xyz/fe2_dmpe2cl2.xyz
+fe2_py4ncs2,Fe,2,0,6,3d,1 3 5,oct,N-sp2;N-sp,,xyz/fe2_py4ncs2.xyz
+fe2_imd4cl2,Fe,2,0,6,3d,1 3 5,oct,N-sp2;halide,,xyz/fe2_imd4cl2.xyz
+fe2_bpy2ncs2,Fe,2,0,6,3d,1 3 5,oct,N-sp2;N-sp,,xyz/fe2_bpy2ncs2.xyz
+fe2_h2o4f2,Fe,2,0,6,3d,1 3 5,oct,O-donor;halide,,xyz/fe2_h2o4f2.xyz
+fe2_nh3_4ox,Fe,2,0,6,3d,1 3 5,oct,N-sp3;O-donor,,xyz/fe2_nh3_4ox.xyz
+fe2_nh3_5co,Fe,2,2,6,3d,1 3 5,oct,N-sp3;C-donor,,xyz/fe2_nh3_5co.xyz
+fe2_nh3_4h2s2,Fe,2,2,6,3d,1 3 5,oct,N-sp3;S-donor,,xyz/fe2_nh3_4h2s2.xyz
+fe2_nh3_4sme2,Fe,2,0,6,3d,1 3 5,oct,N-sp3;S-donor,,xyz/fe2_nh3_4sme2.xyz
+fe2_ph3_4cl2,Fe,2,0,6,3d,1 3 5,oct,P-donor;halide,,xyz/fe2_ph3_4cl2.xyz
+fe2_cl2ph3_2,Fe,2,0,6,3d,1 3 5,sqp;thd,halide;P-donor,,xyz/fe2_cl2ph3_2.xyz
+fe2_cl2pme3_2,Fe,2,0,6,3d,1 3 5,sqp;thd,halide;P-donor,,xyz/fe2_cl2pme3_2.xyz
+fe2_br2ph3_2,Fe,2,0,6,3d,1 3 5,sqp;thd,halide;P-donor,,xyz/fe2_br2ph3_2.xyz
+fe2_cl2py2,Fe,2,0,6,3d,1 3 5,sqp;thd,halide;N-sp2,,xyz/fe2_cl2py2.xyz
+fe2_ncs2py2,Fe,2,0,6,3d,1 3 5,sqp;thd,N-sp;N-sp2,,xyz/fe2_ncs2py2.xyz
+fe2_acac2,Fe,2,0,6,3d,1 3 5,sqp,O-donor,,xyz/fe2_acac2.xyz
+fe2_terpycl2,Fe,2,0,6,3d,1 3 5,spy,N-sp2;halide,,xyz/fe2_terpycl2.xyz
+fe2_nh3_4cl,Fe,2,1,6,3d,1 3 5,spy,N-sp3;halide,,xyz/fe2_nh3_4cl.xyz
+fe2_nh3_3cl2,Fe,2,0,6,3d,1 3 5,tbp,N-sp3;halide,,xyz/fe2_nh3_3cl2.xyz
+fe2_pme3_3cl2,Fe,2,0,6,3d,1 3 5,tbp,P-donor;halide,,xyz/fe2_pme3_3cl2.xyz
+fe2_pdicl2,Fe,2,0,6,3d,1 3 5,spy,non-innocent;halide,noninnocent,xyz/fe2_pdicl2.xyz
+fe2_por,Fe,2,0,6,3d,1 3 5,sqp,non-innocent,noninnocent,xyz/fe2_por.xyz
+fe2_porimd,Fe,2,0,6,3d,1 3 5,spy,non-innocent;N-sp2,noninnocent,xyz/fe2_porimd.xyz
+fe2_porco,Fe,2,0,6,3d,1 3 5,spy,non-innocent;C-donor,noninnocent,xyz/fe2_porco.xyz
+fe2_pornh3_2,Fe,2,0,6,3d,1 3 5,oct,non-innocent;N-sp3,noninnocent,xyz/fe2_pornh3_2.xyz
+co3_h2o6,Co,3,3,6,3d,1 3 5,oct,O-donor,,xyz/co3_h2o6.xyz
+co3_nh3_6,Co,3,3,6,3d,1 3 5,oct,N-sp3,,xyz/co3_nh3_6.xyz
+co3_mecn6,Co,3,3,6,3d,1 3 5,oct,N-sp,,xyz/co3_mecn6.xyz
+co3_en3,Co,3,3,6,3d,1 3 5,oct,N-sp3,,xyz/co3_en3.xyz
+co3_h2o4cl2,Co,3,1,6,3d,1 3 5,oct,O-donor;halide,,xyz/co3_h2o4cl2.xyz
+co3_nh3_4cl2,Co,3,1,6,3d,1 3 5,oct,N-sp3;halide,,xyz/co3_nh3_4cl2.xyz
+co3_en2cl2,Co,3,1,6,3d,1 3 5,oct,N-sp3;halide,,xyz/co3_en2cl2.xyz
+co3_py4cl2,Co,3,1,6,3d,1 3 5,oct,N-sp2;halide,,xyz/co3_py4cl2.xyz
+co3_bpy2cl2,Co,3,1,6,3d,1 3 5,oct,N-sp2;halide,,xyz/co3_bpy2cl2.xyz
+co3_acac3,Co,3,0,6,3d,1 3 5,oct,O-donor,,xyz/co3_acac3.xyz
+co3_nh3_4cn2,Co,3,1,6,3d,1 3 5,oct,N-sp3;C-donor,,xyz/co3_nh3_4cn2.xyz
+co3_dmpe2cl2,Co,3,1,6,3d,1 3 5,oct,P-donor;halide,,xyz/co3_dmpe2cl2.xyz
+co3_imd4cl2,Co,3,1,6,3d,1 3 5,oct,N-sp2;halide,,xyz/co3_imd4cl2.xyz
+co3_bpy2ncs2,Co,3,1,6,3d,1 3 5,oct,N-sp2;N-sp,,xyz/co3_bpy2ncs2.xyz
+co3_h2o4f2,Co,3,1,6,3d,1 3 5,oct,O-donor;halide,,xyz/co3_h2o4f2.xyz
+co3_nh3_4ox,Co,3,1,6,3d,1 3 5,oct,N-sp3;O-donor,,xyz/co3_nh3_4ox.xyz
+co3_nh3_4cat,Co,3,1,6,3d,1 3 5,oct,N-sp3;non-innocent,noninnocent,xyz/co3_nh3_4cat.xyz
+co3_nh3_4h2s2,Co,3,3,6,3d,1 3 5,oct,N-sp3;S-donor,,xyz/co3_nh3_4h2s2.xyz
+co3_nh3_4sme2,Co,3,1,6,3d,1 3 5,oct,N-sp3;S-donor,,xyz/co3_nh3_4sme2.xyz
+co3_porcl,Co,3,0,6,3d,1 3 5,spy,non-innocent;halide,noninnocent,xyz/co3_porcl.xyz
+co3_pornh3_2,Co,3,1,6,3d,1 3 5,oct,non-innocent;N-sp3,noninnocent,xyz/co3_pornh3_2.xyz
+co2_h2o6,Co,2,2,7,3d,2 4,oct,O-donor,jt,xyz/co2_h2o6.xyz
+co2_nh3_6,Co,2,2,7,3d,2 4,oct,N-sp3,jt,xyz/co2_nh3_6.xyz
+co2_mecn6,Co,2,2,7,3d,2 4,oct,N-sp,jt,xyz/co2_mecn6.xyz
+co2_en3,Co,2,2,7,3d,2 4,oct,N-sp3,jt,xyz/co2_en3.xyz
+co2_h2o4cl2,Co,2,0,7,3d,2 4,oct,O-donor;halide,,xyz/co2_h2o4cl2.xyz
+co2_nh3_4cl2,Co,2,0,7,3d,2 4,oct,N-sp3;halide,,xyz/co2_nh3_4cl2.xyz
+co2_en2cl2,Co,2,0,7,3d,2 4,oct,N-sp3;halide,,xyz/co2_en2cl2.xyz
+co2_py4cl2,Co,2,0,7,3d,2 4,oct,N-sp2;halide,,xyz/co2_py4cl2.xyz
+co2_bpy2cl2,Co,2,0,7,3d,2 4,oct,N-sp2;halide,,xyz/co2_bpy2cl2.xyz
+co2_acac3,Co,2,-1,7,3d,2 4,oct,O-donor,jt,xyz/co2_acac3.xyz
+co2_nh3_4cn2,Co,2,0,7,3d,2 4,oct,N-sp3;C-donor,,xyz/co2_nh3_4cn2.xyz
+co2_dmpe2cl2,Co,2,0,7,3d,2 4,oct,P-donor;halide,,xyz/co2_dmpe2cl2.xyz
+co2_py4ncs2,Co,2,0,7,3d,2 4,oct,N-sp2;N-sp,,xyz/co2_py4ncs2.xyz
+co2_imd4cl2,Co,2,0,7,3d,2 4,oct,N-sp2;halide,,xyz/co2_imd4cl2.xyz
+co2_bpy2ncs2,Co,2,0,7,3d,2 4,oct,N-sp2;N-sp,,xyz/co2_bpy2ncs2.xyz
+co2_nh3_4h2s2,Co,2,2,7,3d,2 4,oct,N-sp3;S-donor,,xyz/co2_nh3_4h2s2.xyz
+co2_nh3_4sme2,Co,2,0,7,3d,2 4,oct,N-sp3;S-donor,,xyz/co2_nh3_4sme2.xyz
+co2_cl2ph3_2,Co,2,0,7,3d,2 4,sqp;thd,halide;P-donor,,xyz/co2_cl2ph3_2.xyz
+co2_cl2pme3_2,Co,2,0,7,3d,2 4,sqp;thd,halide;P-donor,,xyz/co2_cl2pme3_2.xyz
+co2_br2ph3_2,Co,2,0,7,3d,2 4,sqp;thd,halide;P-donor,,xyz/co2_br2ph3_2.xyz
+co2_cl2py2,Co,2,0,7,3d,2 4,sqp;thd,halide;N-sp2,,xyz/co2_cl2py2.xyz
+co2_ncs2py2,Co,2,0,7,3d,2 4,sqp;thd,N-sp;N-sp2,,xyz/co2_ncs2py2.xyz
+co2_nh3_4,Co,2,2,7,3d,2 4,sqp;thd,N-sp3,,xyz/co2_nh3_4.xyz
+co2_en2,Co,2,2,7,3d,2 4,sqp,N-sp3,,xyz/co2_en2.xyz
+co2_acac2,Co,2,0,7,3d,2 4,sqp,O-donor,,xyz/co2_acac2.xyz
+co2_bpycl2,Co,2,0,7,3d,2 4,sqp,N-sp2;halide,,xyz/co2_bpycl2.xyz
+co2_nh3_2cn2,Co,2,0,7,3d,2 4,sqp;thd,N-sp3;C-donor,,xyz/co2_nh3_2cn2.xyz
+co2_terpycl2,Co,2,0,7,3d,2 4,spy,N-sp2;halide,,xyz/co2_terpycl2.xyz
+co2_pme3_3cl2,Co,2,0,7,3d,2 4,tbp,P-donor;halide,,xyz/co2_pme3_3cl2.xyz
+co2_nh3_4cl,Co,2,1,7,3d,2 4,spy,N-sp3;halide,,xyz/co2_nh3_4cl.xyz
+co2_nh3_3cl2,Co,2,0,7,3d,2 4,tbp,N-sp3;halide,,xyz/co2_nh3_3cl2.xyz
+co2_pdicl2,Co,2,0,7,3d,2 4,spy,non-innocent;halide,noninnocent,xyz/co2_pdicl2.xyz
+co2_por,Co,2,0,7,3d,2 4,sqp,non-innocent,noninnocent,xyz/co2_por.xyz
+ni3_nh3_6,Ni,3,3,7,3d,2 4,oct,N-sp3,jt,xyz/ni3_nh3_6.xyz
+ni3_en3,Ni,3,3,7,3d,2 4,oct,N-sp3,jt,xyz/ni3_en3.xyz
+ni3_h2o4cl2,Ni,3,1,7,3d,2 4,oct,O-donor;halide,,xyz/ni3_h2o4cl2.xyz
+ni3_nh3_4cl2,Ni,3,1,7,3d,2 4,oct,N-sp3;halide,,xyz/ni3_nh3_4cl2.xyz
+ni3_en2cl2,Ni,3,1,7,3d,2 4,oct,N-sp3;halide,,xyz/ni3_en2cl2.xyz
+ni3_bpy2cl2,Ni,3,1,7,3d,2 4,oct,N-sp2;halide,,xyz/ni3_bpy2cl2.xyz
+ni3_dmpe2cl2,Ni,3,1,7,3d,2 4,oct,P-donor;halide,,xyz/ni3_dmpe2cl2.xyz
+ni3_terpycl2,Ni,3,1,7,3d,2 4,spy,N-sp2;halide,,xyz/ni3_terpycl2.xyz
+ni3_pme3_3cl2,Ni,3,1,7,3d,2 4,tbp,P-donor;halide,,xyz/ni3_pme3_3cl2.xyz
+ni2_h2o6,Ni,2,2,8,3d,1 3,oct,O-donor,mr,xyz/ni2_h2o6.xyz
+ni2_nh3_6,Ni,2,2,8,3d,1 3,oct,N-sp3,mr,xyz/ni2_nh3_6.xyz
+ni2_en3,Ni,2,2,8,3d,1 3,oct,N-sp3,mr,xyz/ni2_en3.xyz
+ni2_h2o4cl2,Ni,2,0,8,3d,1 3,oct,O-donor;halide,mr,xyz/ni2_h2o4cl2.xyz
+ni2_nh3_4cl2,Ni,2,0,8,3d,1 3,oct,N-sp3;halide,mr,xyz/ni2_nh3_4cl2.xyz
+ni2_nh3_4h2s2,Ni,2,2,8,3d,1 3,oct,N-sp3;S-donor,mr,xyz/ni2_nh3_4h2s2.xyz
+ni2_nh3_4sme2,Ni,2,0,8,3d,1 3,oct,N-sp3;S-donor,mr,xyz/ni2_nh3_4sme2.xyz
+ni2_en2cl2,Ni,2,0,8,3d,1 3,oct,N-sp3;halide,mr,xyz/ni2_en2cl2.xyz
+ni2_py4cl2,Ni,2,0,8,3d,1 3,oct,N-sp2;halide,mr,xyz/ni2_py4cl2.xyz
+ni2_bpy2cl2,Ni,2,0,8,3d,1 3,oct,N-sp2;halide,mr,xyz/ni2_bpy2cl2.xyz
+ni2_cl2ph3_2,Ni,2,0,8,3d,1 3,sqp;thd,halide;P-donor,,xyz/ni2_cl2ph3_2.xyz
+ni2_cl2pme3_2,Ni,2,0,8,3d,1 3,sqp;thd,halide;P-donor,,xyz/ni2_cl2pme3_2.xyz
+ni2_br2ph3_2,Ni,2,0,8,3d,1 3,sqp;thd,halide;P-donor,,xyz/ni2_br2ph3_2.xyz
+ni2_cl2py2,Ni,2,0,8,3d,1 3,sqp;thd,halide;N-sp2,,xyz/ni2_cl2py2.xyz
+ni2_ncs2py2,Ni,2,0,8,3d,1 3,sqp;thd,N-sp;N-sp2,,xyz/ni2_ncs2py2.xyz
+ni2_nh3_4,Ni,2,2,8,3d,1 3,sqp;thd,N-sp3,,xyz/ni2_nh3_4.xyz
+ni2_en2,Ni,2,2,8,3d,1 3,sqp,N-sp3,,xyz/ni2_en2.xyz
+ni2_acac2,Ni,2,0,8,3d,1 3,sqp,O-donor,,xyz/ni2_acac2.xyz
+ni2_bpycl2,Ni,2,0,8,3d,1 3,sqp,N-sp2;halide,,xyz/ni2_bpycl2.xyz
+ni2_nh3_2cn2,Ni,2,0,8,3d,1 3,sqp;thd,N-sp3;C-donor,,xyz/ni2_nh3_2cn2.xyz
+ni2_terpycl2,Ni,2,0,8,3d,1 3,spy,N-sp2;halide,,xyz/ni2_terpycl2.xyz
+ni2_pme3_3cl2,Ni,2,0,8,3d,1 3,tbp,P-donor;halide,,xyz/ni2_pme3_3cl2.xyz
+ni2_nh3_4cl,Ni,2,1,8,3d,1 3,spy,N-sp3;halide,,xyz/ni2_nh3_4cl.xyz
+ni2_nh3_3cl2,Ni,2,0,8,3d,1 3,tbp,N-sp3;halide,,xyz/ni2_nh3_3cl2.xyz
+ni2_por,Ni,2,0,8,3d,1 3,sqp,non-innocent,noninnocent,xyz/ni2_por.xyz
+co1_co2ph3_2,Co,1,1,8,3d,1 3,sqp;thd,C-donor;P-donor,,xyz/co1_co2ph3_2.xyz
+co1_co2pme3_2,Co,1,1,8,3d,1 3,sqp;thd,C-donor;P-donor,,xyz/co1_co2pme3_2.xyz
+co1_co3pme3_2,Co,1,1,8,3d,1 3,tbp,C-donor;P-donor,,xyz/co1_co3pme3_2.xyz
+co1_co3ph3_2,Co,1,1,8,3d,1 3,tbp,C-donor;P-donor,,xyz/co1_co3ph3_2.xyz
+ru2_h2o6,Ru,2,2,6,4d,1 3 5,oct,O-donor,,xyz/ru2_h2o6.xyz
+ru2_nh3_6,Ru,2,2,6,4d,1 3 5,oct,N-sp3,,xyz/ru2_nh3_6.xyz
+ru2_mecn6,Ru,2,2,6,4d,1 3 5,oct,N-sp,,xyz/ru2_mecn6.xyz
+ru2_en3,Ru,2,2,6,4d,1 3 5,oct,N-sp3,,xyz/ru2_en3.xyz
+ru2_nh3_4cl2,Ru,2,0,6,4d,1 3 5,oct,N-sp3;halide,,xyz/ru2_nh3_4cl2.xyz
+ru2_en2cl2,Ru,2,0,6,4d,1 3 5,oct,N-sp3;halide,,xyz/ru2_en2cl2.xyz
+ru2_bpy2cl2,Ru,2,0,6,4d,1 3 5,oct,N-sp2;halide,,xyz/ru2_bpy2cl2.xyz
+ru2_bpy2ncs2,Ru,2,0,6,4d,1 3 5,oct,N-sp2;N-sp,,xyz/ru2_bpy2ncs2.xyz
+ru2_nh3_4cn2,Ru,2,0,6,4d,1 3 5,oct,N-sp3;C-donor,,xyz/ru2_nh3_4cn2.xyz
+ru2_nh3_5co,Ru,2,2,6,4d,1 3 5,oct,N-sp3;C-donor,,xyz/ru2_nh3_5co.xyz
+ru2_dmpe2cl2,Ru,2,0,6,4d,1 3 5,oct,P-donor;halide,,xyz/ru2_dmpe2cl2.xyz
+ru3_h2o6,Ru,3,3,5,4d,2 4 6,oct,O-donor,,xyz/ru3_h2o6.xyz
+ru3_nh3_6,Ru,3,3,5,4d,2 4 6,oct,N-sp3,,xyz/ru3_nh3_6.xyz
+ru3_en3,Ru,3,3,5,4d,2 4 6,oct,N-sp3,,xyz/ru3_en3.xyz
+ru3_nh3_4cl2,Ru,3,1,5,4d,2 4 6,oct,N-sp3;halide,,xyz/ru3_nh3_4cl2.xyz
+ru3_en2cl2,Ru,3,1,5,4d,2 4 6,oct,N-sp3;halide,,xyz/ru3_en2cl2.xyz
+ru3_bpy2cl2,Ru,3,1,5,4d,2 4 6,oct,N-sp2;halide,,xyz/ru3_bpy2cl2.xyz
+ru3_acac3,Ru,3,0,5,4d,2 4 6,oct,O-donor,,xyz/ru3_acac3.xyz
+ru3_dmpe2cl2,Ru,3,1,5,4d,2 4 6,oct,P-donor;halide,,xyz/ru3_dmpe2cl2.xyz
+rh3_h2o6,Rh,3,3,6,4d,1 3 5,oct,O-donor,,xyz/rh3_h2o6.xyz
+rh3_nh3_6,Rh,3,3,6,4d,1 3 5,oct,N-sp3,,xyz/rh3_nh3_6.xyz
+rh3_en3,Rh,3,3,6,4d,1 3 5,oct,N-sp3,,xyz/rh3_en3.xyz
+rh3_nh3_4cl2,Rh,3,1,6,4d,1 3 5,oct,N-sp3;halide,,xyz/rh3_nh3_4cl2.xyz
+rh3_en2cl2,Rh,3,1,6,4d,1 3 5,oct,N-sp3;halide,,xyz/rh3_en2cl2.xyz
+rh3_bpy2cl2,Rh,3,1,6,4d,1 3 5,oct,N-sp2;halide,,xyz/rh3_bpy2cl2.xyz
+rh3_acac3,Rh,3,0,6,4d,1 3 5,oct,O-donor,,xyz/rh3_acac3.xyz
+fe2_porno,Fe,2,0,6,3d,2 4,spy,non-innocent,noninnocent,xyz/fe2_porno.xyz
+fe2_h2o5no,Fe,2,2,6,3d,2 4,oct,O-donor;non-innocent,noninnocent,xyz/fe2_h2o5no.xyz
+fe2_nh3_5no,Fe,2,2,6,3d,2 4,oct,N-sp3;non-innocent,noninnocent,xyz/fe2_nh3_5no.xyz
+co2_nh3_5no,Co,2,2,7,3d,1 3,oct,N-sp3;non-innocent,noninnocent,xyz/co2_nh3_5no.xyz
+ru3_nh3_5no,Ru,3,3,5,4d,1 3,oct,N-sp3;non-innocent,noninnocent,xyz/ru3_nh3_5no.xyz
+ni2_dtl2,Ni,2,0,8,3d,1 3,sqp,non-innocent,noninnocent;mr,xyz/ni2_dtl2.xyz
+ni2_dtl2m,Ni,2,-1,8,3d,2 4,sqp,non-innocent,noninnocent;mr,xyz/ni2_dtl2m.xyz
+co3_bpycat2,Co,3,0,6,3d,2 4 6,oct,N-sp2;non-innocent,noninnocent;mr,xyz/co3_bpycat2.xyz
