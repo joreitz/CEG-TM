@@ -22,8 +22,3 @@ def graph(el, xyz):
     there is no H2 ligand here, so such contacts are only steric clashes of a start structure."""
     return {(i, j) for i in range(len(el)) for j in range(i) if not el[i] == el[j] == "H"
             and math.dist(xyz[i], xyz[j]) < (1.35 if {el[i], el[j]} & METALS else 1.3) * (RCOV[el[i]] + RCOV[el[j]])}
-
-
-def same_bonding(xyz_a, xyz_b):
-    """True if two xyz files of the same molecule have the same bond graph."""
-    return graph(*read_xyz(xyz_a)[:2]) == graph(*read_xyz(xyz_b)[:2])

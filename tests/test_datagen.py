@@ -87,48 +87,73 @@ def test_gaps():
 
 def test_collect_end_to_end(tmp_path):
     (tmp_path / "c.csv").write_text("id,metal,ox,charge,dn,row,mults,geometry,ligand_class,flags,xyz\n"
-                                    "fe,Fe,2,2,6,3d,1 3,oct,test,,fe.xyz\n")
+                                    "fe_x,Fe,2,2,6,3d,1 3,oct,test,,fe.xyz\n")
     rks = "N_FOD =     0.200000\nORBITAL ENERGIES\n  NO OCC\n   0   2.0000  -1.0  -27.2\n" \
           "   1   1.9000  -0.3  -8.1\n   2   0.1000  -0.2  -5.4\n\n*****\n"
+    run = tmp_path / "jobs"
+    run.mkdir()
     for m, extra in ((1, rks), (3, "N_FOD =     0.200000\n" + UKS_ORBITALS)):
         for job in make_inputs.JOBS:
-            (tmp_path / f"runs/fe/m{m}/{job}").mkdir(parents=True)
-            (tmp_path / f"runs/fe/m{m}/{job}/{job}.out").write_text(
+            (run / f"{make_inputs.stem('fe_x', job, 2, m)}.out").write_text(
                 f"Total Energy  :  -100.0 Eh\nFINAL SINGLE POINT ENERGY  -102.0\n{extra if job == 'fod' else ''}"
                 "****ORCA TERMINATED NORMALLY****\n")
-    collect.main([str(tmp_path / "c.csv"), str(tmp_path / "runs"), "--out", str(tmp_path)])
+    collect.main([str(tmp_path / "c.csv"), str(run), "--out", str(tmp_path)])
     rows = list(collect.csv.DictReader(open(tmp_path / "states.csv")))
     assert rows[0]["ok"] == "True" and float(rows[0]["nfod_check"]) == pytest.approx(0.2)
     assert rows[1]["ok"] == "False" and "fod:spin" in rows[1]["warn"]  # N_a - N_b = 1, not 2
     assert "tpssh:no_s2" in rows[1]["warn"]
 
 
+def test_stem():
+    assert make_inputs.stem("fe2_h2o6", "tpssh", 2, 5) == "fe2-h2o6-tpssh_p2_5"
+    assert make_inputs.stem("ni2_dtl2m", "cc_tz6", -1, 2) == "ni2-dtl2m-cc-tz6_n1_2"
+    assert make_inputs.stem("fe2_por", "opt", 0, 3) == "fe2-por-opt_n0_3"
+
+
+OPT_OUT = """---------------------------------
+CARTESIAN COORDINATES (ANGSTROEM)
+---------------------------------
+  Fe      0.000000    0.000000    0.000000
+  Cl      {:.6f}    0.000000    0.000000
+
+----------------------------
+CARTESIAN COORDINATES (A.U.)
+THE OPTIMIZATION HAS CONVERGED
+****ORCA TERMINATED NORMALLY****
+"""
+
+
 def test_make_inputs_stages(tmp_path):
-    (tmp_path / "fe.xyz").write_text("1\n\nFe 0 0 0\n")
+    (tmp_path / "fe.xyz").write_text("2\n\nFe 0 0 0\nCl 2.3 0 0\n")
     (tmp_path / "c.csv").write_text("id,metal,ox,charge,dn,row,mults,geometry,ligand_class,flags,xyz\n"
-                                    "fe,Fe,2,2,6,3d,1 5,oct,test,,fe.xyz\n")
-    run = tmp_path / "runs"
-    make_inputs.main([str(tmp_path / "c.csv"), str(run), "--stage", "opt"])
-    assert "! RKS r2SCAN-3c" in (run / "fe/m1/opt/opt.inp").read_text()
-    assert "* xyzfile 2 5 geom.xyz" in (run / "fe/m5/opt/opt.inp").read_text()
+                                    "fe_cl,Fe,2,1,6,3d,1 5,oct,test,,fe.xyz\n")
+    run = tmp_path / "jobs"
 
-    make_inputs.main([str(tmp_path / "c.csv"), str(run), "--stage", "sp"])  # opt not run yet
-    assert not (run / "fe/m5/fod").exists()
+    def make(stage):
+        make_inputs.main([str(tmp_path / "c.csv"), str(run), "--stage", stage])
 
-    opt = run / "fe/m5/opt"
-    (opt / "opt.out").write_text("THE OPTIMIZATION HAS CONVERGED\n****ORCA TERMINATED NORMALLY****\n")
-    (opt / "opt.xyz").write_text("1\n\nFe 0 0 0\n")
-    make_inputs.main([str(tmp_path / "c.csv"), str(run), "--stage", "sp"])
-    fod = (run / "fe/m5/fod/fod.inp").read_text()
-    assert "! UKS TPSS def2-TZVP" in fod and "SmearTemp 5000" in fod
-    assert not (run / "fe/m1/fod").exists()
+    make("opt")
+    assert "! RKS r2SCAN-3c" in (run / "fe-cl-opt_p1_1.inp").read_text()
+    inp = (run / "fe-cl-opt_p1_5.inp").read_text()
+    assert "* xyz 1 5\n  Fe" in inp and inp.rstrip().endswith("*")
 
-    opt = run / "fe/m1/opt"  # converged, but the chloride left during the optimisation
-    (opt / "geom.xyz").write_text("2\n\nFe 0 0 0\nCl 2.3 0 0\n")
-    (opt / "opt.xyz").write_text("2\n\nFe 0 0 0\nCl 4.5 0 0\n")
-    (opt / "opt.out").write_text("THE OPTIMIZATION HAS CONVERGED\n****ORCA TERMINATED NORMALLY****\n")
-    make_inputs.main([str(tmp_path / "c.csv"), str(run), "--stage", "sp"])
-    assert not (run / "fe/m1/fod").exists()
+    make("sp")  # opt not run yet
+    assert not (run / "fe-cl-fod_p1_5.inp").exists()
+
+    (run / "fe-cl-opt_p1_5.out").write_text(OPT_OUT.format(2.25))
+    (run / "fe-cl-opt_p1_1.out").write_text(OPT_OUT.format(4.5))  # the chloride left during the optimisation
+    make("sp")
+    fod = (run / "fe-cl-fod_p1_5.inp").read_text()
+    assert "! UKS TPSS def2-TZVP" in fod and "SmearTemp 5000" in fod and "Cl     2.25000000" in fod
+    assert not (run / "fe-cl-fod_p1_1.inp").exists()
+
+    make("cc")  # needs the TPSSh output and orbitals
+    assert not (run / "fe-cl-cc-tz6_p1_5.inp").exists()
+    (run / "fe-cl-tpssh_p1_5.out").write_text("****ORCA TERMINATED NORMALLY****\n")
+    (run / "fe-cl-tpssh_p1_5.gbw").touch()
+    make("cc")
+    cc = (run / "fe-cl-cc-tz6_p1_5.inp").read_text()
+    assert f'%moinp "{run.resolve()}/fe-cl-tpssh_p1_5.gbw"' in cc and "! UHF DLPNO-CCSD(T1)" in cc
 
 
 def test_candidates_consistent():

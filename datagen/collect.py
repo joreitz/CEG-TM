@@ -11,7 +11,7 @@ import math
 import re
 from pathlib import Path
 
-from make_inputs import JOBS, NORMAL, read_manifest
+from make_inputs import JOBS, NORMAL, read_manifest, stem
 
 HARTREE = 627.509474  # kcal/mol per Eh
 F_PNO = 1.5  # CPS extrapolation TCutPNO 1e-6 -> 1e-7 (Altun, Neese, Bistoni, JCTC 2020)
@@ -87,13 +87,13 @@ def e_ref(r, cps=True, cbs=True):
     return r["E_scf_qz"] + ec + ec_basis - ec6
 
 
-def parse_state(sdir, mult):
-    """States.csv fields (without id/mult) from the job directories of one spin state."""
+def parse_state(folder, cid, charge, mult):
+    """States.csv fields (without id/mult) from the outputs of one spin state in the job folder."""
     warn, txt = [], {}
     for job in JOBS:
         if job == "opt":
             continue
-        out = sdir / job / f"{job}.out"
+        out = folder / f"{stem(cid, job, charge, mult)}.out"
         t = out.read_text(errors="ignore") if out.is_file() else None
         if t is None or NORMAL not in t:
             warn.append(f"{job}:{'missing' if t is None else 'failed'}")
@@ -184,12 +184,12 @@ def write(path, rows):
 def main(argv=None):
     ap = argparse.ArgumentParser(description="Collect ORCA results into states.csv and gaps.csv.")
     ap.add_argument("manifest", help="complexes.csv")
-    ap.add_argument("root", help="run directory")
+    ap.add_argument("folder", help="folder with all inputs and outputs")
     ap.add_argument("--nevpt2", help="optional CSV with columns id,mult,E (total energy in Eh)")
     ap.add_argument("--out", default=".", help="output directory")
     a = ap.parse_args(argv)
 
-    states = [{"id": row["id"], "mult": m, **parse_state(Path(a.root) / row["id"] / f"m{m}", m)}
+    states = [{"id": row["id"], "mult": m, **parse_state(Path(a.folder), row["id"], row["charge"], m)}
               for row in read_manifest(a.manifest) for m in row["mults"]]
     nevpt2 = {}
     if a.nevpt2:

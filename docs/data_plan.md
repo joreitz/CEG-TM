@@ -97,7 +97,7 @@ RKS/RHF for singlets, UKS/UHF otherwise. The exact ORCA headers live in `datagen
 | sp | `tpssh` | TPSSh-D4/def2-TZVP, StabPerform | $E_\mathrm{DFT}$ (fit target), ⟨S²⟩ |
 | sp | `tpss`, `tpss0` | TPSS-D4, TPSS0-D4 /def2-TZVP | $a_x$ = 0 / 0.10 / 0.25 → $d\Delta E/da_x$ |
 | sp | `r2scan0` | r2SCAN0-D4/def2-TZVP | second functional |
-| sp | `fod` | TPSS/def2-TZVP, SmearTemp 5000 K, `FOD` | $N_\mathrm{FOD}$; keep `fod.gbw` and `fod.scfp_fod` for the Hirshfeld partition |
+| sp | `fod` | TPSS/def2-TZVP, SmearTemp 5000 K, `FOD` | $N_\mathrm{FOD}$; keep the `.gbw` and `.scfp_fod` files for the Hirshfeld partition |
 | cc | `cc_tz6`, `cc_tz7`, `cc_qz6` | DLPNO-CCSD(T1) TightPNO; TCutPNO 1e-6/1e-7 (def2-TZVPP) and 1e-6 (def2-QZVPP); TPSSh orbitals as guess | reference |
 | manual | NEVPT2 | CASSCF/SC-NEVPT2, double-shell active space | consensus for the MR subset |
 
@@ -147,7 +147,7 @@ $F$ and $\beta$ are set in `datagen/collect.py`. Check them in the pilot against
 
 `gaps.csv` (output, one row per gap, kcal/mol): `id, mult_lo, mult_hi, dE_ref, sigma, sigma_pno, sigma_cbs, sigma_mr, dE_tpssh, dE_r2scan0, dE_dax, dnfod, mr_flag, ok`.
 
-Atom-resolved descriptors ($N_\mathrm{FOD}^M$, $N_\mathrm{FOD}^L$, CN) will be produced later by `fodtm descriptors` from `fod.gbw`/`fod.scfp_fod` and the geometries.
+Atom-resolved descriptors ($N_\mathrm{FOD}^M$, $N_\mathrm{FOD}^L$, CN) will be produced later by `fodtm descriptors` from the `.gbw`/`.scfp_fod` files of the FOD jobs and the geometries.
 
 **Open decision:** the implementation of the Hirshfeld reference densities.
 
@@ -156,16 +156,31 @@ Atom-resolved descriptors ($N_\mathrm{FOD}^M$, $N_\mathrm{FOD}^L$, CN) will be p
 The start structures are already in `structures/` (section 8a), so ORCA work starts directly:
 
 ```bash
-python datagen/make_inputs.py structures/pilot.csv runs --stage opt   # then run the jobs
-python datagen/make_inputs.py structures/pilot.csv runs --stage sp    # needs converged opt
-python datagen/make_inputs.py structures/pilot.csv runs --stage cc    # needs opt + tpssh
-python datagen/collect.py structures/pilot.csv runs --out data [--nevpt2 nevpt2.csv]
+python datagen/make_inputs.py structures/pilot.csv jobs --stage opt   # then run the jobs
+python datagen/make_inputs.py structures/pilot.csv jobs --stage sp    # needs converged opt
+python datagen/make_inputs.py structures/pilot.csv jobs --stage cc    # needs opt + tpssh (.out and .gbw)
+python datagen/collect.py structures/pilot.csv jobs --out data [--nevpt2 nevpt2.csv]
 ```
 
 Use `structures/complexes.csv` instead of `structures/pilot.csv` for the full set.
 
-- Every stage writes `runs/jobs_<stage>.txt` listing the new job directories.
-- Run each job inside its directory as `orca <job>.inp > <job>.out`, using the full ORCA path for parallel runs.
+**Files.** All inputs of all stages go into one folder (`jobs` above), named `<name>_<charge>_<mult>.inp`:
+
+| part | meaning | example |
+|---|---|---|
+| name | complex id and job, joined by `-`; never contains `_` | `fe2-h2o6-tpssh`, `ni2-dtl2m-cc-tz6` |
+| charge | `p<q>` for positive, `n<abs(q)>` for neutral and negative | `p2`, `n0`, `n1` |
+| mult | spin multiplicity | `1` singlet, `2` doublet, `3` triplet |
+
+Example: `fe2-h2o6-tpssh_p2_5.inp` is the TPSSh single point of [Fe(H2O)6]²⁺ in the quintet state.
+
+- Coordinates are written into the input (`* xyz`), so every `.inp` runs on its own.
+- The submission script must write the output as `<same stem>.out` into the same folder, e.g. `orca fe2-h2o6-tpssh_p2_5.inp > fe2-h2o6-tpssh_p2_5.out`.
+- The submission script must copy these files back into the folder:
+  - the `.gbw` of the TPSSh jobs: the DLPNO inputs read it via an absolute `%moinp` path into this folder;
+  - the `.gbw` and `.scfp_fod` of the FOD jobs, for the Hirshfeld partition.
+- The sp and cc stages take the optimised geometry from the last coordinate block of the opt `.out`; the `.xyz` is not needed.
+- Each run lists the inputs written in that run in `new_<stage>.txt`. The folder also keeps the inputs of finished jobs. If your script submits every `.inp` in the folder, submit only the files listed in `new_<stage>.txt` instead, or skip inputs whose `.out` already exists.
 - Re-running a stage skips finished jobs. Jobs that are not ready yet are listed on stderr.
 - `--jobs` restricts a stage, e.g. `--stage sp --jobs tpssh fod` to postpone r2SCAN0.
 
