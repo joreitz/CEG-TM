@@ -12,6 +12,8 @@ import shutil
 import sys
 from pathlib import Path
 
+from geom import same_bonding
+
 NORMAL = "ORCA TERMINATED NORMALLY"
 CONVERGED = "OPTIMIZATION HAS CONVERGED"
 COLUMNS = {"id", "metal", "ox", "charge", "dn", "row", "mults", "geometry", "ligand_class", "flags", "xyz"}
@@ -70,7 +72,10 @@ def sources(stage, sdir, xyz, mult):
         opt = sdir / "opt" / "opt.out"
         if not (done(opt) and CONVERGED in opt.read_text(errors="ignore")):
             return "opt not converged"
-        files = {"geom.xyz": sdir / "opt" / "opt.xyz"}
+        start, final = sdir / "opt" / "geom.xyz", sdir / "opt" / "opt.xyz"
+        if start.is_file() and final.is_file() and not same_bonding(start, final):
+            return "bonding changed during opt (e.g. ligand dissociated), inspect opt.xyz"
+        files = {"geom.xyz": final}
         if stage == "cc":
             if not done(sdir / "tpssh" / "tpssh.out"):
                 return "tpssh not finished"
