@@ -5,6 +5,8 @@ Additive correction term for correlation estimation from geometry-based ligand f
 - `structures/` – candidate complexes: `complexes.csv` (manifest), `pilot.csv` (5-complex pilot), `xyz/` (GFN2-xTB pre-optimised start structures)
 - `datagen/build_structures.py` – builds the candidate structures with molSimplify
 - `datagen/preopt_xtb.py` – GFN2-xTB pre-optimisation with a bond-graph check
+- `datagen/idealise_oxalate.py` – rebuilds the oxalate ring of the M(ox)(NH3)4 start structures (xTB breaks it)
+- `structures/state_overrides.csv` – states excluded from the data set or with an accepted bonding change, each with its reason
 - `datagen/make_inputs.py` – ORCA inputs per complex, spin state and stage (`opt`, `sp`, `cc`), all in one folder
 - `datagen/collect.py` – parses ORCA outputs into `states.csv` and `gaps.csv`
 - `tests/` – `python -m pytest tests/`

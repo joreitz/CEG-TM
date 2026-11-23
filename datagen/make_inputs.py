@@ -7,7 +7,9 @@ All inputs go into one folder as <name>_<charge>_<mult>.inp, e.g. fe2-h2o6-tpssh
   mult    spin multiplicity (1 singlet, 2 doublet, ...)
 Coordinates are written into the input, so every .inp is self-contained. Outputs are expected next to the
 inputs as <same stem>.out. Finished jobs are skipped; jobs whose prerequisites are not finished are reported
-and skipped. The DLPNO jobs read the TPSSh orbitals via %moinp "<tpssh stem>.gbw" (file name only): a submission
+and skipped. Optimisations that finished without converging are reported; --restart continues them from
+their last geometry. Per-state overrides (exclude a state, or accept a bonding change) are read from
+state_overrides.csv next to the manifest. The DLPNO jobs read the TPSSh orbitals via %moinp "<tpssh stem>.gbw" (file name only): a submission
 script that runs ORCA in a scratch directory must copy that .gbw there (suborca does this for %moinp files).
 """
 import argparse
@@ -19,6 +21,8 @@ from geom import graph, read_xyz
 
 NORMAL = "ORCA TERMINATED NORMALLY"
 CONVERGED = "OPTIMIZATION HAS CONVERGED"
+OPT_MAXITER = 300  # ORCA's default (~3 N_atoms, at least 50) was too small for 27 of 649 states
+OVERRIDES = "state_overrides.csv"  # id,mult,action,reason; action 'exclude' or 'keep' (accept bonding change)
 COLUMNS = {"id", "metal", "ox", "charge", "dn", "row", "mults", "geometry", "ligand_class", "flags", "xyz"}
 
 
@@ -31,7 +35,8 @@ def cc(basis, tcut):
 # job -> (stage, ORCA header); {ks}/{hf} become RKS/RHF for singlets and UKS/UHF otherwise.
 # Keywords to confirm in the pilot: TPSS0, r2SCAN0, D4 parameters for TPSS/TPSS0, DLPNO-CCSD(T1).
 JOBS = {
-    "opt": ("opt", "! {ks} r2SCAN-3c Opt TightSCF NOTRAH KDIIS SOSCF"),  # helps SCF convergence of TM states
+    "opt": ("opt", "! {ks} r2SCAN-3c Opt TightSCF NOTRAH KDIIS SOSCF\n"  # helps SCF convergence of TM states
+                   f"%geom MaxIter {OPT_MAXITER} end"),
     "tpssh": ("sp", "! {ks} TPSSh D4 def2-TZVP def2/J RIJCOSX TightSCF\n%scf StabPerform true end"),
     "tpss": ("sp", "! {ks} TPSS D4 def2-TZVP def2/J TightSCF"),
     "tpss0": ("sp", "! {ks} TPSS0 D4 def2-TZVP def2/J RIJCOSX TightSCF"),
@@ -43,9 +48,26 @@ JOBS = {
 }
 
 
+def read_overrides(path):
+    """{(id, mult): action} from the overrides file, {} if there is none."""
+    if not Path(path).is_file():
+        return {}
+    with open(path, newline="") as f:
+        rows = list(csv.DictReader(f))
+    bad = [r for r in rows if r["action"] not in ("exclude", "keep")]
+    if bad:
+        sys.exit(f"{path}: unknown action in {bad[0]}")
+    return {(r["id"], int(r["mult"])): r["action"] for r in rows}
+
+
 def read_manifest(path):
-    """Manifest rows with 'mults' as list of int, 'charge' as int and 'xyz' relative to the manifest."""
+    """Manifest rows with 'mults' as list of int, 'charge' as int and 'xyz' relative to the manifest.
+
+    States marked 'exclude' in state_overrides.csv are removed from 'mults'; a complex with fewer than two
+    states left has no spin gap and is dropped. 'keep' holds the states whose bonding change is accepted.
+    """
     path = Path(path)
+    overrides = read_overrides(path.parent / OVERRIDES)
     with open(path, newline="") as f:
         reader = csv.DictReader(f)
         missing = COLUMNS - set(reader.fieldnames or [])
@@ -55,11 +77,15 @@ def read_manifest(path):
     ids = [r["id"] for r in rows]
     if len(ids) != len(set(ids)):
         sys.exit(f"{path}: duplicate ids")
+    kept = []
     for r in rows:
-        r["mults"] = [int(m) for m in r["mults"].split()]
+        r["mults"] = [int(m) for m in r["mults"].split() if overrides.get((r["id"], int(m))) != "exclude"]
+        r["keep"] = {m for m in r["mults"] if overrides.get((r["id"], m)) == "keep"}
         r["charge"] = int(r["charge"])
         r["xyz"] = path.parent / r["xyz"]
-    return rows
+        if len(r["mults"]) >= 2:
+            kept.append(r)
+    return kept
 
 
 def stem(cid, job, charge, mult):
@@ -102,7 +128,7 @@ def geometry(stage, row, mult, folder):
     el, xyz = last_geometry(text)
     if el != el0:
         return "no final geometry in opt output"
-    if graph(el0, xyz0) != graph(el, xyz):
+    if graph(el0, xyz0) != graph(el, xyz) and mult not in row["keep"]:
         return "bonding changed during opt (e.g. ligand dissociated), inspect the opt output"
     if stage == "cc":
         tpssh = folder / stem(row["id"], "tpssh", row["charge"], mult)
@@ -117,21 +143,34 @@ def main(argv=None):
     ap.add_argument("folder", help="folder for all inputs and outputs")
     ap.add_argument("--stage", required=True, choices=["opt", "sp", "cc"])
     ap.add_argument("--jobs", nargs="+", help="restrict to these jobs of the stage (default: all)")
+    ap.add_argument("--restart", action="store_true",
+                    help="opt stage: continue optimisations that finished unconverged from their last geometry")
     ap.add_argument("--nprocs", type=int, default=8)
     ap.add_argument("--maxcore", type=int, default=4000, help="MB per core")
     a = ap.parse_args(argv)
 
     jobs = [j for j, (stage, _) in JOBS.items() if stage == a.stage and (not a.jobs or j in a.jobs)]
-    folder, written, skipped = Path(a.folder).resolve(), [], 0
+    folder, written, skipped, unconverged = Path(a.folder).resolve(), [], 0, []
     folder.mkdir(parents=True, exist_ok=True)
     for row in read_manifest(a.manifest):
         for mult in row["mults"]:
             for job in jobs:
                 name = stem(row["id"], job, row["charge"], mult)
-                if done(folder / f"{name}.out"):
+                out = folder / f"{name}.out"
+                text = out.read_text(errors="ignore") if out.is_file() else ""
+                if NORMAL in text and (job != "opt" or CONVERGED in text):
                     skipped += 1
                     continue
-                geo = geometry(a.stage, row, mult, folder)
+                if job == "opt" and NORMAL in text:  # finished, but not converged
+                    if not a.restart:
+                        unconverged.append(name)
+                        continue
+                    geo = last_geometry(text)
+                    if not geo[0]:
+                        print(f"not ready: {name} (no geometry in the unconverged opt output)", file=sys.stderr)
+                        continue
+                else:
+                    geo = geometry(a.stage, row, mult, folder)
                 if isinstance(geo, str):
                     print(f"not ready: {name} ({geo})", file=sys.stderr)
                     continue
@@ -144,6 +183,9 @@ def main(argv=None):
                 written.append(f"{name}.inp")
     if written:
         (folder / f"new_{a.stage}.txt").write_text("\n".join(written) + "\n")
+    if unconverged:
+        print(f"{len(unconverged)} optimisations finished unconverged (use --restart): {' '.join(unconverged)}",
+              file=sys.stderr)
     print(f"{a.stage}: {len(written)} inputs written to {folder} (list: new_{a.stage}.txt), "
           f"{skipped} finished jobs skipped")
 

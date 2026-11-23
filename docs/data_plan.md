@@ -137,6 +137,7 @@ $F$ and $\beta$ are set in `datagen/collect.py`. Check them in the pilot against
 |---|---|
 | `E_tpssh`, `E_tpss`, `E_tpss0`, `E_r2scan0` | DFT energies |
 | `s2` | ⟨S²⟩ (TPSSh, UKS only) |
+| `s2_hf` | ⟨S²⟩ of the UHF reference of the DLPNO jobs (`cc_tz7`) |
 | `nfod` | $N_\mathrm{FOD}$ printed by ORCA |
 | `nfod_check` | $N_\mathrm{FOD}$ recomputed from the printed occupations |
 | `Ec_tz6`, `Ec_tz7`, `Ec_qz6`, `E_scf_qz` | DLPNO components |
@@ -157,6 +158,7 @@ The start structures are already in `structures/` (section 8a), so ORCA work sta
 
 ```bash
 python datagen/make_inputs.py structures/pilot.csv jobs --stage opt   # then run the jobs
+python datagen/make_inputs.py structures/pilot.csv jobs --stage opt --restart  # continue unconverged opts
 python datagen/make_inputs.py structures/pilot.csv jobs --stage sp    # needs converged opt
 python datagen/make_inputs.py structures/pilot.csv jobs --stage cc    # needs opt + tpssh (.out and .gbw)
 python datagen/collect.py structures/pilot.csv jobs --out data [--nevpt2 nevpt2.csv]
@@ -182,9 +184,16 @@ Example: `fe2-h2o6-tpssh_p2_5.inp` is the TPSSh single point of [Fe(H2O)6]²⁺ 
 - The sp and cc stages take the optimised geometry from the last coordinate block of the opt `.out`; the `.xyz` is not needed.
 - Each run lists the inputs written in that run in `new_<stage>.txt`. The folder also keeps the inputs of finished jobs. If your script submits every `.inp` in the folder, submit only the files listed in `new_<stage>.txt` instead, or skip inputs whose `.out` already exists.
 - Re-running a stage skips finished jobs. Jobs that are not ready yet are listed on stderr.
+- Optimisations run with `%geom MaxIter 300` (ORCA's default, about 3 N_atoms, was too small for 27 of 649 states). An opt that finished without converging is listed on stderr and not rewritten; `--restart` writes it again from the last geometry of its output (the new run overwrites the old `.out`). An opt that crashed (no `ORCA TERMINATED NORMALLY`) is rewritten from the start structure; if its SCF failed, fix the SCF settings first.
+- **State overrides** (`structures/state_overrides.csv`, columns `id,mult,action,reason`), read by `make_inputs.py` and `collect.py` through `read_manifest`:
+  - `exclude`: the state is dropped everywhere. A complex with fewer than two states left has no gap and is dropped.
+  - `keep`: the bonding change found after the opt is accepted (e.g. a long but intact bond just above the threshold), so the single points are written.
+  - Every entry carries its reason; add an entry instead of deleting files or editing `complexes.csv`.
 - `--jobs` restricts a stage, e.g. `--stage sp --jobs tpssh fod` to postpone r2SCAN0.
 
-**Submission on marvin (`suborca`).** Run `suborca` inside the job folder; it runs ORCA in a node-local scratch directory, writes `<stem>.out` into the folder and removes the scratch directory afterwards. In a non-interactive shell set `export HOSTNAME=$(hostname)` first.
+**ORCA version.** All energies (sp and cc stages) are computed with ORCA 6.1.1. The opt stage ran with ORCA 6.1.0; it only provides geometries, so the version change does not mix energies.
+
+**Submission on marvin (`suborca`).** Run `suborca` inside the job folder; it runs ORCA in a node-local scratch directory, writes `<stem>.out` into the folder and removes the scratch directory afterwards. In a non-interactive shell set `export HOSTNAME=$(hostname)` first; `suborca` needs Python 3.13 (`module load Python/3.13.5-GCCcore-14.3.0`) and defaults to ORCA 6.1.1.
 
 | jobs | command | copied back |
 |---|---|---|
@@ -200,7 +209,9 @@ Example: `fe2-h2o6-tpssh_p2_5.inp` is the TPSSh single point of [Fe(H2O)6]²⁺ 
 |---|---|
 | `<job>:missing` / `<job>:failed` | no output / not terminated normally |
 | `<job>:no_<value>` | expected value not found in a finished output |
-| `tpssh:s2` | \|⟨S²⟩ − S(S+1)\| > 0.1 |
+| `tpssh:s2` | \|⟨S²⟩ − S(S+1)\| > 0.5 for TPSSh; the state is not ok |
+| `s2:tpssh` | 0.2 < \|⟨S²⟩ − S(S+1)\| ≤ 0.5 for TPSSh (informative) |
+| `s2:hf` | \|⟨S²⟩ − S(S+1)\| > 0.5 for the UHF reference of the DLPNO jobs (informative until the pilot) |
 | `fod:nfod_mismatch` | \|N_FOD(ORCA) − N_FOD(recomputed)\| > 0.01 |
 | `fod:spin` | smearing changed $N_\alpha - N_\beta$, i.e. the multiplicity is not conserved |
 | `t1:missing` | informative only; does not affect `ok` |
@@ -245,6 +256,7 @@ Current status:
 - 279 of 281 files are pre-optimised.
 - [Fe(H2O)4F2] and [Ni(H2O)4Cl2] keep the molSimplify geometry: GFN2 detaches water in every multiplicity.
 - All files have the target coordination number, and there are no non-bonded contacts below 1.5 Å.
+- The four M(ox)(NH3)4 files are not xTB-optimised: GFN2-xTB (and the molSimplify input) stretched the oxalate C–C bond to 1.7–1.9 Å with C–O 1.18 Å (towards 2 CO2), and the r2SCAN-3c optimisations of the high-spin Fe(III)/Co(III) states then broke it. `datagen/idealise_oxalate.py` rebuilds an ideal planar chelate ring (C–C 1.55 Å, M–O 2.0 Å) and marks the file `no xTB preopt`, which `preopt_xtb.py` keeps as it is.
 
 GFN2-xTB only provides start geometries; the r2SCAN-3c optimisation decides the final structure of each state. `make_inputs.py` compares the bond graphs of the start and the optimised r2SCAN-3c geometry. If a ligand dissociated or bonding otherwise changed, no single points are written for that state.
 
