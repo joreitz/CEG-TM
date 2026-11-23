@@ -7,7 +7,8 @@ All inputs go into one folder as <name>_<charge>_<mult>.inp, e.g. fe2-h2o6-tpssh
   mult    spin multiplicity (1 singlet, 2 doublet, ...)
 Coordinates are written into the input, so every .inp is self-contained. Outputs are expected next to the
 inputs as <same stem>.out. Finished jobs are skipped; jobs whose prerequisites are not finished are reported
-and skipped. The DLPNO jobs read the TPSSh orbitals from <tpssh stem>.gbw in the same folder (absolute path).
+and skipped. The DLPNO jobs read the TPSSh orbitals via %moinp "<tpssh stem>.gbw" (file name only): a submission
+script that runs ORCA in a scratch directory must copy that .gbw there (suborca does this for %moinp files).
 """
 import argparse
 import csv
@@ -30,7 +31,7 @@ def cc(basis, tcut):
 # job -> (stage, ORCA header); {ks}/{hf} become RKS/RHF for singlets and UKS/UHF otherwise.
 # Keywords to confirm in the pilot: TPSS0, r2SCAN0, D4 parameters for TPSS/TPSS0, DLPNO-CCSD(T1).
 JOBS = {
-    "opt": ("opt", "! {ks} r2SCAN-3c Opt TightSCF"),
+    "opt": ("opt", "! {ks} r2SCAN-3c Opt TightSCF NOTRAH KDIIS SOSCF"),  # helps SCF convergence of TM states
     "tpssh": ("sp", "! {ks} TPSSh D4 def2-TZVP def2/J RIJCOSX TightSCF\n%scf StabPerform true end"),
     "tpss": ("sp", "! {ks} TPSS D4 def2-TZVP def2/J TightSCF"),
     "tpss0": ("sp", "! {ks} TPSS0 D4 def2-TZVP def2/J RIJCOSX TightSCF"),
@@ -135,7 +136,7 @@ def main(argv=None):
                     print(f"not ready: {name} ({geo})", file=sys.stderr)
                     continue
                 ks, hf = ("RKS", "RHF") if mult == 1 else ("UKS", "UHF")
-                gbw = folder / f"{stem(row['id'], 'tpssh', row['charge'], mult)}.gbw"
+                gbw = f"{stem(row['id'], 'tpssh', row['charge'], mult)}.gbw"
                 coords = [f"  {e:2s} {x:14.8f} {y:14.8f} {z:14.8f}" for e, (x, y, z) in zip(*geo)]
                 (folder / f"{name}.inp").write_text("\n".join([
                     JOBS[job][1].format(ks=ks, hf=hf, gbw=gbw), f"%pal nprocs {a.nprocs} end",

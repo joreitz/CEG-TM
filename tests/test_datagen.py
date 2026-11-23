@@ -133,7 +133,7 @@ def test_make_inputs_stages(tmp_path):
         make_inputs.main([str(tmp_path / "c.csv"), str(run), "--stage", stage])
 
     make("opt")
-    assert "! RKS r2SCAN-3c" in (run / "fe-cl-opt_p1_1.inp").read_text()
+    assert "! RKS r2SCAN-3c Opt TightSCF NOTRAH KDIIS SOSCF" in (run / "fe-cl-opt_p1_1.inp").read_text()
     inp = (run / "fe-cl-opt_p1_5.inp").read_text()
     assert "* xyz 1 5\n  Fe" in inp and inp.rstrip().endswith("*")
 
@@ -153,7 +153,7 @@ def test_make_inputs_stages(tmp_path):
     (run / "fe-cl-tpssh_p1_5.gbw").touch()
     make("cc")
     cc = (run / "fe-cl-cc-tz6_p1_5.inp").read_text()
-    assert f'%moinp "{run.resolve()}/fe-cl-tpssh_p1_5.gbw"' in cc and "! UHF DLPNO-CCSD(T1)" in cc
+    assert '%moinp "fe-cl-tpssh_p1_5.gbw"' in cc and "! UHF DLPNO-CCSD(T1)" in cc
 
 
 def test_candidates_consistent():

@@ -93,7 +93,7 @@ RKS/RHF for singlets, UKS/UHF otherwise. The exact ORCA headers live in `datagen
 
 | stage | job | method | purpose |
 |---|---|---|---|
-| opt | `opt` | r2SCAN-3c | geometry of each state |
+| opt | `opt` | r2SCAN-3c with `NOTRAH KDIIS SOSCF` (more robust SCF convergence, also for states with static correlation) | geometry of each state |
 | sp | `tpssh` | TPSSh-D4/def2-TZVP, StabPerform | $E_\mathrm{DFT}$ (fit target), ⟨S²⟩ |
 | sp | `tpss`, `tpss0` | TPSS-D4, TPSS0-D4 /def2-TZVP | $a_x$ = 0 / 0.10 / 0.25 → $d\Delta E/da_x$ |
 | sp | `r2scan0` | r2SCAN0-D4/def2-TZVP | second functional |
@@ -177,12 +177,22 @@ Example: `fe2-h2o6-tpssh_p2_5.inp` is the TPSSh single point of [Fe(H2O)6]²⁺ 
 - Coordinates are written into the input (`* xyz`), so every `.inp` runs on its own.
 - The submission script must write the output as `<same stem>.out` into the same folder, e.g. `orca fe2-h2o6-tpssh_p2_5.inp > fe2-h2o6-tpssh_p2_5.out`.
 - The submission script must copy these files back into the folder:
-  - the `.gbw` of the TPSSh jobs: the DLPNO inputs read it via an absolute `%moinp` path into this folder;
+  - the `.gbw` of the TPSSh jobs: the DLPNO inputs read it via `%moinp "<tpssh stem>.gbw"` (file name only), so it must also be copied into the scratch directory of the cc job;
   - the `.gbw` and `.scfp_fod` of the FOD jobs, for the Hirshfeld partition.
 - The sp and cc stages take the optimised geometry from the last coordinate block of the opt `.out`; the `.xyz` is not needed.
 - Each run lists the inputs written in that run in `new_<stage>.txt`. The folder also keeps the inputs of finished jobs. If your script submits every `.inp` in the folder, submit only the files listed in `new_<stage>.txt` instead, or skip inputs whose `.out` already exists.
 - Re-running a stage skips finished jobs. Jobs that are not ready yet are listed on stderr.
 - `--jobs` restricts a stage, e.g. `--stage sp --jobs tpssh fod` to postpone r2SCAN0.
+
+**Submission on marvin (`suborca`).** Run `suborca` inside the job folder; it runs ORCA in a node-local scratch directory, writes `<stem>.out` into the folder and removes the scratch directory afterwards. In a non-interactive shell set `export HOSTNAME=$(hostname)` first.
+
+| jobs | command | copied back |
+|---|---|---|
+| `opt`, `tpss`, `tpss0`, `r2scan0`, `cc_*` | `suborca <stem>.inp -c 12 -t 4h` | only `.out` (+ `.err`) |
+| `tpssh` | `suborca <stem>.inp -c 12 -t 4h -o` | `.gbw` (needed by the cc stage) |
+| `fod` | `suborca <stem>.inp -c 12 -t 4h -f` | all files, in the subfolder `<stem>./` (contains `.gbw` and `.scfp_fod`) |
+
+`suborca` copies the `%moinp` file of a cc job into its scratch directory automatically. Opt jobs took 1–80 min (median 8 min) on 12 cores, so `-t 4h` (`intelsr_short`) is enough; the cc jobs, especially `cc_qz6`, need a longer `-t` (check the pilot). SLURM accepts at most 300 queued jobs per user and `suborca` does not report rejected submissions, so submit large stages in a throttled loop (wait while `squeue -h -u $USER | wc -l` is near the limit).
 
 **Warnings written by `collect.py`:**
 
