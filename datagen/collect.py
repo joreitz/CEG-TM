@@ -18,7 +18,7 @@ F_PNO = 1.5  # CPS extrapolation TCutPNO 1e-6 -> 1e-7 (Altun, Neese, Bistoni, JC
 BETA = 2.97  # def2 TZ/QZ correlation-energy exponent (Neese, Valeev, JCTC 2011); check in pilot
 SIGMA_CC, SIGMA_CC_MR = 1.5, 3.0  # kcal/mol: CCSD(T) MAE on SSE17, doubled if T1 > T1_MAX
 T1_MAX = 0.05  # 3d-metal threshold (Jiang, DeYonker, Wilson, JCTC 2012)
-S2_TOL = 0.1
+S2_WARN, S2_MAX = 0.2, 0.5  # <S2> - S(S+1): warn (informative) / state not ok
 FOD_TOL = 0.01  # covers the 4-decimal rounding of the printed occupation numbers
 REQUIRED = ("tpssh", "fod", "cc_tz6", "cc_tz7", "cc_qz6")  # a state is 'ok' only if these are clean
 AX = {"tpss": 0.0, "tpssh": 0.10, "tpss0": 0.25}  # Fock-exchange fractions of the a_x scan
@@ -108,8 +108,14 @@ def parse_state(folder, cid, charge, mult):
     r = {f"E_{j}": get(j, "E") for j in ("tpssh", "tpss", "tpss0", "r2scan0")}
     s = (mult - 1) / 2
     r["s2"] = get("tpssh", "s2") if mult > 1 else math.nan
-    if abs(r["s2"] - s * (s + 1)) > S2_TOL:
-        warn.append("tpssh:s2")
+    r["s2_hf"] = last("s2", txt["cc_tz7"]) if mult > 1 else math.nan  # UHF reference of the DLPNO jobs
+    dev, dev_hf = abs(r["s2"] - s * (s + 1)), abs(r["s2_hf"] - s * (s + 1))
+    if dev > S2_MAX:
+        warn.append("tpssh:s2")  # spin contamination too large: state not ok
+    elif dev > S2_WARN:
+        warn.append("s2:tpssh")  # informative
+    if dev_hf > S2_MAX:
+        warn.append("s2:hf")  # informative until the pilot shows how often UHF is this contaminated
 
     r["nfod"] = get("fod", "nfod")
     chans = occupations(txt["fod"])

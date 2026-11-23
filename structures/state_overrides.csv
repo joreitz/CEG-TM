@@ -1,0 +1,5 @@
+id,mult,action,reason
+cr2_h2o4cl2,5,exclude,two H2O dissociate in the r2SCAN-3c opt (Jahn-Teller d4); no gap left -> complex dropped
+mn2_en2cl2,4,exclude,one en becomes monodentate in the r2SCAN-3c opt
+co2_en2cl2,2,exclude,one en becomes monodentate in the r2SCAN-3c opt; no gap left -> complex dropped
+fe2_h2o4f2,5,keep,two Fe-O elongate to 2.43 A (start 2.12 A) just above the 2.42 A bond threshold; not dissociated

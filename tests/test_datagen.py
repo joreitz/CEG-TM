@@ -156,6 +156,53 @@ def test_make_inputs_stages(tmp_path):
     assert '%moinp "fe-cl-tpssh_p1_5.gbw"' in cc and "! UHF DLPNO-CCSD(T1)" in cc
 
 
+def test_opt_restart_and_overrides(tmp_path, capsys):
+    (tmp_path / "fe.xyz").write_text("2\n\nFe 0 0 0\nCl 2.3 0 0\n")
+    (tmp_path / "c.csv").write_text("id,metal,ox,charge,dn,row,mults,geometry,ligand_class,flags,xyz\n"
+                                    "fe_cl,Fe,2,1,6,3d,1 3 5,oct,test,,fe.xyz\n"
+                                    "fe_br,Fe,2,1,6,3d,1 5,oct,test,,fe.xyz\n")
+    run = tmp_path / "jobs"
+
+    def make(stage, *extra):
+        make_inputs.main([str(tmp_path / "c.csv"), str(run), "--stage", stage, *extra])
+
+    make("opt")
+    assert "%geom MaxIter 300 end" in (run / "fe-cl-opt_p1_1.inp").read_text()
+    unconverged = OPT_OUT.format(2.4).replace("THE OPTIMIZATION HAS CONVERGED\n", "")
+    (run / "fe-cl-opt_p1_5.out").write_text(unconverged)
+    (run / "fe-cl-opt_p1_5.inp").unlink()
+    make("opt")  # without --restart: reported, not rewritten
+    assert not (run / "fe-cl-opt_p1_5.inp").exists() and "fe-cl-opt_p1_5" in capsys.readouterr().err
+    make("opt", "--restart")  # continues from the last geometry of the unconverged run
+    assert "Cl     2.40000000" in (run / "fe-cl-opt_p1_5.inp").read_text()
+
+    (tmp_path / "state_overrides.csv").write_text("id,mult,action,reason\n"
+                                                  "fe_cl,3,exclude,test\n"
+                                                  "fe_cl,1,keep,long bond is fine\n"
+                                                  "fe_br,5,exclude,only one state left -> complex dropped\n")
+    rows = make_inputs.read_manifest(tmp_path / "c.csv")
+    assert [(r["id"], r["mults"], r["keep"]) for r in rows] == [("fe_cl", [1, 5], {1})]
+    (run / "fe-cl-opt_p1_1.out").write_text(OPT_OUT.format(4.5))  # bonding changed, but accepted
+    make("sp", "--jobs", "fod")
+    assert "Cl     4.50000000" in (run / "fe-cl-fod_p1_1.inp").read_text()
+    assert not (run / "fe-cl-fod_p1_3.inp").exists() and not (run / "fe-br-fod_p1_1.inp").exists()
+
+
+def test_s2_thresholds(tmp_path):
+    (tmp_path / "c.csv").write_text("id,metal,ox,charge,dn,row,mults,geometry,ligand_class,flags,xyz\n"
+                                    "fe_x,Fe,2,2,6,3d,3 5,oct,test,,fe.xyz\n")
+    run = tmp_path / "jobs"
+    run.mkdir()
+    for m, s2 in ((3, 2.3), (5, 6.6)):  # deviations 0.3 (warn) and 0.6 (not ok)
+        for job in make_inputs.JOBS:
+            (run / f"{make_inputs.stem('fe_x', job, 2, m)}.out").write_text(
+                f"Expectation value of <S**2>     :     {s2}\nN_FOD =     0.000000\n"
+                "****ORCA TERMINATED NORMALLY****\n")
+    st = {s["mult"]: s for s in (collect.parse_state(run, "fe_x", 2, m) | {"mult": m} for m in (3, 5))}
+    assert "s2:tpssh" in st[3]["warn"] and "tpssh:s2" not in st[3]["warn"]
+    assert "tpssh:s2" in st[5]["warn"] and "s2:hf" in st[5]["warn"] and not st[5]["ok"]
+
+
 def test_candidates_consistent():
     rows = [r for _, _, r in build_structures.candidates()]
     assert len({r["id"] for r in rows}) == len(rows)

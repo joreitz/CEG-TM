@@ -4,7 +4,8 @@
 Each xyz file is optimised for the state it serves: <id>_m<mult>.xyz for that multiplicity, <id>.xyz for
 the highest multiplicity without its own file. A result is accepted only if xtb terminated normally and the
 bond graph (geom.graph, including metal-donor bonds) is unchanged; otherwise the input structure is kept and
-the failure is logged in preopt_log.csv. Optimised files are marked in the comment line and skipped on re-runs.
+the failure is logged in preopt_log.csv. Optimised files are marked in the comment line and skipped on re-runs;
+files whose comment line starts with 'no xTB preopt' (e.g. from idealise_oxalate.py) are kept as they are.
 """
 import argparse
 import csv
@@ -49,6 +50,8 @@ def preopt(path, charge, mults, xtb):
     """Optimise an xyz file in place, trying the multiplicities it serves from high to low (GFN2 often
     over-stretches high-spin bonds); return a status string."""
     comment = read_xyz(path)[2]
+    if comment.startswith("no xTB preopt"):  # built by hand, e.g. idealise_oxalate.py
+        return f"kept ({comment})"
     if TAG in comment:
         return f"ok ({comment.removeprefix(TAG).strip()}, earlier run)"
     errors = []
