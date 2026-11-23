@@ -215,6 +215,20 @@ def test_candidates_consistent():
     assert set(build_structures.PILOT) <= {r["id"] for r in rows}
 
 
+def test_metallocenes():
+    import build_metallocenes
+    el, xyz = build_metallocenes.metallocene("Fe", 1.67)
+    assert el.count("C") == 10 and el.count("H") == 10 and len(el) == 21
+    bonds = geom.graph(el, xyz)
+    assert sum(0 in b for b in bonds) == 10  # eta5 + eta5
+    assert sum(1 for i, j in bonds if el[i] == el[j] == "C") == 10  # two C5 rings
+    assert set(build_structures.HANDBUILT) <= {r["id"] for _, _, r in build_structures.candidates()}
+    rows = {r["id"]: r for r in make_inputs.read_manifest(Path(__file__).resolve().parents[1] / "structures" /
+                                                          "complexes.csv")}
+    assert all(cid in rows and rows[cid]["xyz"].is_file() for cid in build_structures.HANDBUILT)
+    assert rows["mn2_cp2"]["mults"] == [2, 4, 6] and "ru2_nh3_6" in rows and 3 not in rows["ru2_nh3_6"]["mults"]
+
+
 def test_graph_and_tasks(tmp_path):
     el = ["Fe", "Cl", "O", "H"]
     xyz = [(0, 0, 0), (2.3, 0, 0), (0, 2.2, 0), (0, 3.15, 0)]

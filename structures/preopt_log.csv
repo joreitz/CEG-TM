@@ -280,3 +280,9 @@ ru3_nh3_5no,ru3_nh3_5no.xyz,"ok (charge=3 mult=3, earlier run)"
 ni2_dtl2,ni2_dtl2.xyz,"ok (charge=0 mult=3, earlier run)"
 ni2_dtl2m,ni2_dtl2m.xyz,"ok (charge=-1 mult=4, earlier run)"
 co3_bpycat2,co3_bpycat2.xyz,"ok (charge=0 mult=6, earlier run)"
+cr2_cp2,cr2_cp2.xyz,kept (no xTB preopt: metallocene built by build_metallocenes.py)
+mn2_cp2,mn2_cp2.xyz,kept (no xTB preopt: metallocene built by build_metallocenes.py)
+mn2_cp2,mn2_cp2_m2.xyz,kept (no xTB preopt: metallocene built by build_metallocenes.py)
+fe2_cp2,fe2_cp2.xyz,kept (no xTB preopt: metallocene built by build_metallocenes.py)
+co2_cp2,co2_cp2.xyz,kept (no xTB preopt: metallocene built by build_metallocenes.py)
+ni2_cp2,ni2_cp2.xyz,kept (no xTB preopt: metallocene built by build_metallocenes.py)

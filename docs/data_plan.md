@@ -240,6 +240,7 @@ python datagen/preopt_xtb.py structures/complexes.csv --xtb <xtb>           # GF
   - NO is counted as neutral. The formal oxidation state and dⁿ are those of the metal without NO.
   - Ni dithiolene and Co catecholate/semiquinone carry explicit charges.
   - All of them are flagged `noninnocent`. Dithiolene and catecholate are also flagged `mr`.
+- Metallocenes M(Cp)2 (M = Cr, Mn, Fe, Co, Ni; `HANDBUILT`, geometry `sandwich`, ligand class `C-pi`) are real molecules and a classic spin-state benchmark. They are not built by molSimplify but by `datagen/build_metallocenes.py` (staggered D5d, M–centroid distances from gas-phase electron diffraction; manganocene has a high-spin start and a low-spin start `mn2_cp2_m2.xyz` for the doublet). Expected ground states: CrCp2 triplet, MnCp2 high-spin sextet with a low-lying doublet, FeCp2 singlet (18 VE), CoCp2 doublet (19 VE, one electron in e1g*), NiCp2 triplet (20 VE: the two electrons beyond 18 occupy the degenerate e1g* pair, Hund's rule).
 - The complexes are hypothetical model complexes chosen to span the ligand field. Real complexes (e.g. literature spin-crossover systems) should be added by hand with the same manifest columns.
 
 **`preopt_xtb.py`** optimises each file with GFN2-xTB for the states it serves:

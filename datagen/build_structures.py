@@ -3,7 +3,8 @@
 
 Writes <out>/complexes.csv, <out>/pilot.csv and <out>/xyz/<id>.xyz. CN4 complexes that may switch
 between square-planar and tetrahedral also get <id>_m<lowest mult>.xyz (square planar), which
-make_inputs.py uses for that state. Needs the molSimplify legacy CLI; the structures are versioned,
+make_inputs.py uses for that state. The metallocenes (HANDBUILT) are built by build_metallocenes.py and only
+listed here. Needs the molSimplify legacy CLI; the structures are versioned,
 so this only has to be re-run when the candidate list changes.
 """
 import argparse
@@ -142,6 +143,14 @@ EXTRA = {  # id: (metal tag, set, charge, ox, d^n, multiplicities, flags)
     "ni2_dtl2m": ("ni2", "dtl2", -1, 2, 8, "2 4", "noninnocent;mr"),
     "co3_bpycat2": ("co3", "bpycat2", 0, 3, 6, "2 4 6", "noninnocent;mr"),  # Co(III)(cat)(sq) <-> Co(II)(sq)2
 }
+# Built without molSimplify (datagen/build_metallocenes.py); listed here so that the manifest keeps them.
+HANDBUILT = {  # id: (metal tag, geometry, ligand class, flags)
+    "cr2_cp2": ("cr2", "sandwich", "C-pi", "jt"),  # 3E2g ground state
+    "mn2_cp2": ("mn2", "sandwich", "C-pi", ""),  # high-spin 6A1g vs low-spin 2E2g, close in energy
+    "fe2_cp2": ("fe2", "sandwich", "C-pi", ""),  # 18 VE, closed-shell singlet
+    "co2_cp2": ("co2", "sandwich", "C-pi", "jt"),  # 19 VE, 2E1g (e1g*^1)
+    "ni2_cp2": ("ni2", "sandwich", "C-pi", ""),  # 20 VE, 3A2g (e1g*^2, Hund)
+}
 PILOT = ["fe2_h2o6", "fe2_mecn6", "mn2_h2o6", "ni2_cl2ph3_2", "fe2_por"]
 
 
@@ -166,6 +175,10 @@ def candidates():
         core, row = METALS[mtag][0], METALS[mtag][3]
         rows.append((mtag, stag, dict(id=cid, metal=core.capitalize(), ox=ox, charge=q, dn=dn, row=row,
                                       mults=mults, geometry=SETS[stag][0], ligand_class=SETS[stag][3], flags=flags)))
+    for cid, (mtag, geo, lclass, flags) in HANDBUILT.items():
+        core, ox, dn, row, mults = METALS[mtag]
+        rows.append((mtag, None, dict(id=cid, metal=core.capitalize(), ox=ox, charge=0, dn=dn, row=row,
+                                      mults=mults, geometry=geo, ligand_class=lclass, flags=flags)))
     return rows
 
 
@@ -231,7 +244,7 @@ def main(argv=None):
         print(f"{row['id']}: {'; '.join(errors) or 'ok'}", flush=True)
         return row, errors
 
-    todo = [c for c in candidates() if not a.only or c[2]["id"] in a.only]
+    todo = [c for c in candidates() if c[2]["id"] not in HANDBUILT and (not a.only or c[2]["id"] in a.only)]
     with ThreadPoolExecutor(a.nprocs) as pool:
         results = list(pool.map(build_all, todo))
     failed = {row["id"]: errors for row, errors in results if errors}
