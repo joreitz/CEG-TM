@@ -254,3 +254,8 @@ ru3_nh3_5no,Ru,3,3,5,4d,1 3,oct,N-sp3;non-innocent,noninnocent,xyz/ru3_nh3_5no.x
 ni2_dtl2,Ni,2,0,8,3d,1 3,sqp,non-innocent,noninnocent;mr,xyz/ni2_dtl2.xyz
 ni2_dtl2m,Ni,2,-1,8,3d,2 4,sqp,non-innocent,noninnocent;mr,xyz/ni2_dtl2m.xyz
 co3_bpycat2,Co,3,0,6,3d,2 4 6,oct,N-sp2;non-innocent,noninnocent;mr,xyz/co3_bpycat2.xyz
+cr2_cp2,Cr,2,0,4,3d,3 5,sandwich,C-pi,jt,xyz/cr2_cp2.xyz
+mn2_cp2,Mn,2,0,5,3d,2 4 6,sandwich,C-pi,,xyz/mn2_cp2.xyz
+fe2_cp2,Fe,2,0,6,3d,1 3 5,sandwich,C-pi,,xyz/fe2_cp2.xyz
+co2_cp2,Co,2,0,7,3d,2 4,sandwich,C-pi,jt,xyz/co2_cp2.xyz
+ni2_cp2,Ni,2,0,8,3d,1 3,sandwich,C-pi,,xyz/ni2_cp2.xyz
