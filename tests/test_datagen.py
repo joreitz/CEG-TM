@@ -65,7 +65,7 @@ def state(mult, scf, ec, nfod=0.0, t1=0.01, ok=True):
     tz, qz = ec + 0.5 * 3**-collect.BETA, ec + 0.5 * 4**-collect.BETA
     return {"id": "x", "mult": mult, "E_scf_qz": scf, "Ec_tz6": tz + 0.001, "Ec_tz7": tz + 0.0006,
             "Ec_qz6": qz + 0.001, "E_tpssh": scf, "E_tpss": scf, "E_tpss0": scf, "E_r2scan0": scf,
-            "nfod": nfod, "t1": t1, "ok": ok}
+            "nfod": nfod, "nfod_paired": nfod, "nfod_unpaired": 0.0, "t1": t1, "ok": ok}
 
 
 def test_e_ref_recovers_cps_and_cbs_limit():
@@ -254,3 +254,28 @@ def test_structures_electron_parity():
             el = preopt_xtb.read_xyz(xyz)[0]
             nel = sum(Z[e] for e in el) - row["charge"]
             assert all((nel - m + 1) % 2 == 0 for m in row["mults"]), xyz.name
+
+
+def test_restricted_singlets(tmp_path):
+    """Singlets keep RKS/RHF (instability only flagged); a broken-symmetry singlet output is not ok."""
+    import make_inputs
+    assert "StabRestartUHFifUnstable false" in make_inputs.STAB[True]
+    assert "StabRestartUHFifUnstable" not in make_inputs.STAB[False]
+    good = "The stability analysis indicates that the wavefunction is unstable\nFINAL SINGLE POINT ENERGY -1.0\n"
+    for name, text in (("a", good), ("b", good + "Expectation value of <S**2>     :     0.98\n")):
+        (tmp_path / f"x-tpssh_n0_1.out").write_text(text + make_inputs.NORMAL)
+        r = collect.parse_state(tmp_path, "x", 0, 1)
+        assert r["mr_rks"] == 1 and "mr:rks_unstable" in r["warn"]
+        assert ("tpssh:bs_singlet" in r["warn"]) == (name == "b")
+
+
+def test_nfod_split():
+    """Paired part from fractional pairs in both channels, unpaired part from one-channel degeneracy."""
+    hs_d6 = [[1.0] * 5 + [0.0], [1 / 3, 1 / 3, 1 / 3, 0.0]]  # beta electron over three degenerate orbitals
+    a, b = collect.nfod_split(hs_d6)
+    assert a == pytest.approx(0.0) and b == pytest.approx(4 / 3)
+    a, b = collect.nfod_split([[1.0, 0.8, 0.2], [1.0, 0.8, 0.2]])
+    assert a == pytest.approx(0.4) and b == pytest.approx(0.4)
+    a, b = collect.nfod_split([[2.0, 1.6, 0.4]])  # restricted
+    assert a == b == pytest.approx(0.4)
+    assert math.isnan(collect.nfod_split([])[0])
