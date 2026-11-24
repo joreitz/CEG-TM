@@ -30,6 +30,7 @@ PAT = {
     "nfod": r"N_FOD\s*=\s*(-?\d+\.\d+)",
     "t1": r"T1 diagnostic\s*\.*\s*(-?\d+\.\d+)",
 }
+UNSTABLE = "wavefunction is unstable"  # ORCA stability analysis found a lower solution
 ORB = re.compile(r"^\s*\d+\s+(\d+\.\d+)\s+(-?\d+\.\d+)\s+-?\d+\.\d+\s*$")  # NO OCC E(Eh) E(eV)
 
 
@@ -76,6 +77,21 @@ def nfod_from_occ(chans):
     return total, nel
 
 
+def nfod_split(chans):
+    """(N_FOD^alpha, N_FOD^beta); a restricted run (one channel) is split evenly.
+
+    The paired part 2 min(N_a, N_b) tracks static correlation (fractional bonding/antibonding pairs in both spin
+    channels; follows <S2> contamination), the unpaired part |N_a - N_b| mostly orbital degeneracy within one
+    channel (e.g. the beta electron of high-spin d6 in a near-degenerate t2g-like set).
+    """
+    if not chans:
+        return math.nan, math.nan
+    if len(chans) == 1:
+        half = nfod_from_occ(chans)[0] / 2
+        return half, half
+    return nfod_from_occ([chans[0], []])[0], nfod_from_occ([chans[1], []])[0]
+
+
 def e_ref(r, cps=True, cbs=True):
     """E_SCF(QZ) + E_c(TZ, CPS-extrapolated) + [E_c,CBS(TZ/QZ) - E_c(TZ)] in Eh.
 
@@ -116,10 +132,24 @@ def parse_state(folder, cid, charge, mult):
         warn.append("s2:tpssh")  # informative
     if dev_hf > S2_MAX:
         warn.append("s2:hf")  # informative until the pilot shows how often UHF is this contaminated
+    # Singlets are computed restricted (make_inputs.STAB). An RKS/RHF -> UKS/UHF instability marks static
+    # correlation: kept as a multireference flag (NEVPT2 candidate). A singlet output with <S2> is a
+    # broken-symmetry run from the old header and has to be recomputed.
+    r["mr_rks"] = int(mult == 1 and UNSTABLE in txt["tpssh"])
+    r["mr_rhf"] = int(mult == 1 and UNSTABLE in txt["cc_tz7"])
+    if r["mr_rks"]:
+        warn.append("mr:rks_unstable")
+    if r["mr_rhf"]:
+        warn.append("mr:rhf_unstable")
+    if mult == 1 and not math.isnan(last("s2", txt["tpssh"])):
+        warn.append("tpssh:bs_singlet")
 
     r["nfod"] = get("fod", "nfod")
     chans = occupations(txt["fod"])
     r["nfod_check"], nel = nfod_from_occ(chans)
+    r["nfod_a"], r["nfod_b"] = nfod_split(chans)
+    r["nfod_paired"] = 2 * min(r["nfod_a"], r["nfod_b"])
+    r["nfod_unpaired"] = abs(r["nfod_a"] - r["nfod_b"])
     if txt["fod"] and not chans:
         warn.append("fod:no_orbitals")
     if abs(r["nfod"] - r["nfod_check"]) > FOD_TOL:
@@ -173,7 +203,8 @@ def gaps(states, nevpt2=None):
                 "sigma_pno": s_pno, "sigma_cbs": s_cbs, "sigma_mr": s_mr,
                 "dE_tpssh": d(lambda st: st["E_tpssh"]), "dE_r2scan0": d(lambda st: st["E_r2scan0"]),
                 "dE_dax": slope(list(AX.values()), [d(lambda st, j=j: st[f"E_{j}"]) for j in AX]),
-                "dnfod": hi["nfod"] - lo["nfod"], "mr_flag": mr, "ok": lo["ok"] and hi["ok"],
+                "dnfod": hi["nfod"] - lo["nfod"], "dnfod_paired": hi["nfod_paired"] - lo["nfod_paired"],
+                "dnfod_unpaired": hi["nfod_unpaired"] - lo["nfod_unpaired"], "mr_flag": mr, "ok": lo["ok"] and hi["ok"],
             })
     return rows
 

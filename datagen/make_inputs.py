@@ -29,15 +29,21 @@ COLUMNS = {"id", "metal", "ox", "charge", "dn", "row", "mults", "geometry", "lig
 def cc(basis, tcut):
     """DLPNO-CCSD(T1) header; guess orbitals are taken from the TPSSh single point."""
     return (f"! {{hf}} DLPNO-CCSD(T1) TightPNO {basis} {basis}/C def2/J RIJCOSX TightSCF MORead\n"
-            f'%moinp "{{gbw}}"\n%scf StabPerform true end\n%mdci TCutPNO {tcut} end')
+            f'%moinp "{{gbw}}"\n{{stab}}\n%mdci TCutPNO {tcut} end')
 
 
-# job -> (stage, ORCA header); {ks}/{hf} become RKS/RHF for singlets and UKS/UHF otherwise.
+# Stability analysis: open shells may relax to a lower UKS/UHF solution; singlets stay restricted (decision
+# 2026-11-24): an RKS/RHF instability is only reported (collect.py flags it as multireference), because the
+# broken-symmetry UKS/UHF solution is spin-contaminated and is not the singlet state.
+# NoPop: ORCA 6.1.1 aborts in the population analysis after an unstable RKS without UKS restart (missing .scfr).
+STAB = {True: "! NoPop\n%scf StabPerform true StabRestartUHFifUnstable false end", False: "%scf StabPerform true end"}
+
+# job -> (stage, ORCA header); {ks}/{hf} become RKS/RHF for singlets and UKS/UHF otherwise; {stab} see STAB.
 # Keywords to confirm in the pilot: TPSS0, r2SCAN0, D4 parameters for TPSS/TPSS0, DLPNO-CCSD(T1).
 JOBS = {
     "opt": ("opt", "! {ks} r2SCAN-3c Opt TightSCF NOTRAH KDIIS SOSCF\n"  # helps SCF convergence of TM states
                    f"%geom MaxIter {OPT_MAXITER} end"),
-    "tpssh": ("sp", "! {ks} TPSSh D4 def2-TZVP def2/J RIJCOSX TightSCF\n%scf StabPerform true end"),
+    "tpssh": ("sp", "! {ks} TPSSh D4 def2-TZVP def2/J RIJCOSX TightSCF\n{stab}"),
     "tpss": ("sp", "! {ks} TPSS D4 def2-TZVP def2/J TightSCF"),
     "tpss0": ("sp", "! {ks} TPSS0 D4 def2-TZVP def2/J RIJCOSX TightSCF"),
     "r2scan0": ("sp", "! {ks} r2SCAN0 D4 def2-TZVP def2/J RIJCOSX TightSCF"),
@@ -178,7 +184,7 @@ def main(argv=None):
                 gbw = f"{stem(row['id'], 'tpssh', row['charge'], mult)}.gbw"
                 coords = [f"  {e:2s} {x:14.8f} {y:14.8f} {z:14.8f}" for e, (x, y, z) in zip(*geo)]
                 (folder / f"{name}.inp").write_text("\n".join([
-                    JOBS[job][1].format(ks=ks, hf=hf, gbw=gbw), f"%pal nprocs {a.nprocs} end",
+                    JOBS[job][1].format(ks=ks, hf=hf, gbw=gbw, stab=STAB[mult == 1]), f"%pal nprocs {a.nprocs} end",
                     f"%maxcore {a.maxcore}", f"* xyz {row['charge']} {mult}", *coords, "*"]) + "\n")
                 written.append(f"{name}.inp")
     if written:

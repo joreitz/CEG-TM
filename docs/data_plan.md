@@ -103,6 +103,10 @@ RKS/RHF for singlets, UKS/UHF otherwise. The exact ORCA headers live in `datagen
 
 **NEVPT2 subset (~15–20 %):** states with T1 > 0.05 (3d threshold of Jiang, DeYonker, Wilson 2012), high $N_\mathrm{FOD}$, or the flags `jt`/`mr`. Results go into `nevpt2.csv` (`id,mult,E` in Eh), independent of the program used.
 
+**Singlets stay restricted (decision 2026-11-24).** The `tpssh` and `cc_*` jobs run a stability analysis. Open shells may relax to a lower UKS/UHF solution. Singlets do not: `StabRestartUHFifUnstable false` keeps RKS/RHF (a broken-symmetry UKS/UHF solution is spin-contaminated and is not the singlet state), and `! NoPop` is needed because ORCA 6.1.1 otherwise aborts in the population analysis after an unstable RKS. The instability is stored as a multireference flag (`mr_rks`, `mr_rhf` in states.csv; NEVPT2 candidates). 26 of 96 TPSSh singlets in the first run were unstable, mostly Fe(II).
+
+**Spin-resolved $N_\mathrm{FOD}$.** `nfod_paired` = $2\min(N_\alpha, N_\beta)$ and `nfod_unpaired` = $|N_\alpha - N_\beta|$ are kept as separate descriptors. First data (528 open-shell states): the paired part follows the $\langle S^2\rangle$ contamination (Spearman 0.66, total $N_\mathrm{FOD}$ 0.52), the unpaired part does not (−0.12); in the highest-multiplicity states 85 % of $N_\mathrm{FOD}$ is unpaired and follows the ligand-field degeneracy (d⁵ lowest, d⁶/d⁷ highest). Both go into the fit as separate terms; the data decide whether the unpaired part gets a weight.
+
 The $a_x$ scan checks the fit: if the fitted term (I) correlates strongly with $d\Delta E/da_x$, term (II) is partly redundant.
 
 ## 6. Reference energy and uncertainty
@@ -140,13 +144,16 @@ $F$ and $\beta$ are set in `datagen/collect.py`. Check them in the pilot against
 | `s2_hf` | ⟨S²⟩ of the UHF reference of the DLPNO jobs (`cc_tz7`) |
 | `nfod` | $N_\mathrm{FOD}$ printed by ORCA |
 | `nfod_check` | $N_\mathrm{FOD}$ recomputed from the printed occupations |
+| `nfod_a`, `nfod_b` | $N_\mathrm{FOD}$ per spin channel (restricted runs: half each) |
+| `nfod_paired` | $2\min(N_\alpha, N_\beta)$: fractional pairs in both channels, tracks static correlation / $\langle S^2\rangle$ |
+| `nfod_unpaired` | $\lvert N_\alpha - N_\beta\rvert$: one-channel fractional occupation, mostly orbital (near-)degeneracy |
 | `Ec_tz6`, `Ec_tz7`, `Ec_qz6`, `E_scf_qz` | DLPNO components |
 | `E_ref` | reference energy |
 | `t1` | max T1 diagnostic |
 | `ok` | true if all required jobs (`tpssh`, `fod`, `cc_*`) are clean |
 | `warn` | all warnings |
 
-`gaps.csv` (output, one row per gap, kcal/mol): `id, mult_lo, mult_hi, dE_ref, sigma, sigma_pno, sigma_cbs, sigma_mr, dE_tpssh, dE_r2scan0, dE_dax, dnfod, mr_flag, ok`.
+`gaps.csv` (output, one row per gap, kcal/mol): `id, mult_lo, mult_hi, dE_ref, sigma, sigma_pno, sigma_cbs, sigma_mr, dE_tpssh, dE_r2scan0, dE_dax, dnfod, dnfod_paired, dnfod_unpaired, mr_flag, ok`.
 
 Atom-resolved descriptors ($N_\mathrm{FOD}^M$, $N_\mathrm{FOD}^L$, CN) will be produced later by `fodtm descriptors` from the `.gbw`/`.scfp_fod` files of the FOD jobs and the geometries.
 

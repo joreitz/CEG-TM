@@ -4,3 +4,20 @@ mn2_en2cl2,4,exclude,one en becomes monodentate in the r2SCAN-3c opt
 co2_en2cl2,2,exclude,one en becomes monodentate in the r2SCAN-3c opt; no gap left -> complex dropped
 fe2_h2o4f2,5,keep,two Fe-O elongate to 2.43 A (start 2.12 A) just above the 2.42 A bond threshold; not dissociated
 ru2_nh3_6,3,exclude,"axial Ru-N elongate from 2.48 to 2.67-2.70 A in the r2SCAN-3c opt (4+2 coordination, above the bond threshold)"
+mn2_nh3_4sme2,4,exclude,one NH3 dissociates in the r2SCAN-3c opt (Mn-N 3.35 A)
+fe2_en2cl2,3,exclude,one en becomes monodentate in the r2SCAN-3c opt (Fe-N 3.44 A)
+fe2_h2o4f2,3,keep,one Fe-O elongates to 2.48 A (restart start 2.42 A); same Jahn-Teller-like distortion as the quintet; not dissociated
+fe2_nh3_4ox,3,exclude,axial Fe-N elongate to 2.54 A in the r2SCAN-3c opt (4+2 coordination)
+fe2_nh3_4sme2,3,exclude,two NH3 dissociate in the r2SCAN-3c opt (Fe-N 3.34 / 3.80 A)
+ru2_h2o6,3,exclude,axial Ru-O elongate to 2.55 / 2.58 A in the r2SCAN-3c opt (4+2 coordination)
+co3_nh3_4ox,5,exclude,oxalate C-C breaks again from the idealised start (2.04 A): internal redox to Co(II) + CO2 fragments
+ni2_h2o6,1,exclude,"singlet goes square planar (two trans donors at 2.7-3.7 A) in r2SCAN-3c and TPSSh-D4/def2-SVP; no octahedral low-spin Ni(II) -> complex dropped"
+ni2_nh3_6,1,exclude,"singlet goes square planar (two trans donors at 2.7-3.7 A) in r2SCAN-3c and TPSSh-D4/def2-SVP; no octahedral low-spin Ni(II) -> complex dropped"
+ni2_en3,1,exclude,"singlet goes square planar (two trans donors at 2.7-3.7 A) in r2SCAN-3c and TPSSh-D4/def2-SVP; no octahedral low-spin Ni(II) -> complex dropped"
+ni2_h2o4cl2,1,exclude,"singlet goes square planar (two trans donors at 2.7-3.7 A) in r2SCAN-3c and TPSSh-D4/def2-SVP; no octahedral low-spin Ni(II) -> complex dropped"
+ni2_nh3_4cl2,1,exclude,"singlet goes square planar (two trans donors at 2.7-3.7 A) in r2SCAN-3c and TPSSh-D4/def2-SVP; no octahedral low-spin Ni(II) -> complex dropped"
+ni2_nh3_4h2s2,1,exclude,"singlet goes square planar (two trans donors at 2.7-3.7 A) in r2SCAN-3c and TPSSh-D4/def2-SVP; no octahedral low-spin Ni(II) -> complex dropped"
+ni2_nh3_4sme2,1,exclude,"singlet goes square planar (two trans donors at 2.7-3.7 A) in r2SCAN-3c and TPSSh-D4/def2-SVP; no octahedral low-spin Ni(II) -> complex dropped"
+ni2_en2cl2,1,exclude,"singlet goes square planar (two trans donors at 2.7-3.7 A) in r2SCAN-3c and TPSSh-D4/def2-SVP; no octahedral low-spin Ni(II) -> complex dropped"
+ni2_py4cl2,1,exclude,"singlet goes square planar (two trans donors at 2.7-3.7 A) in r2SCAN-3c and TPSSh-D4/def2-SVP; no octahedral low-spin Ni(II) -> complex dropped"
+ni2_bpy2cl2,1,exclude,"singlet goes square planar (two trans donors at 2.7-3.7 A) in r2SCAN-3c and TPSSh-D4/def2-SVP; no octahedral low-spin Ni(II) -> complex dropped"
